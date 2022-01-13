@@ -1,0 +1,4 @@
+echo ?[0,0,0,CMD,SYN,0(Lock)]? > COM
+echo ?[0,0,0,CMD,SYN,0(Unlock)]? > COM
+echo ?[0,0,0,CMD,SYN,0(Set Pump Flow Rate,1.0)]? > COM
+echo ?[0,0,0,CMD,SYN,0(Stop Pump)]? > COM

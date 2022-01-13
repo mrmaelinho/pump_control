@@ -1,0 +1,1354 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type='text/xsl' href='ISReport.xsl'?>
+<Gilson>
+  <InstructionSet>
+    <Devices>
+      <!-- Start of Verity 3011 Device definition -->
+      <Device>
+        <DeviceName>Verity 3011 Pump</DeviceName>
+        <DeviceId>1</DeviceId>
+        <DeviceVersion>1.0.17.0</DeviceVersion>
+        <DeviceType>USB</DeviceType>
+        <DeviceGroup>Pump</DeviceGroup>
+        <PriorityLevel>1</PriorityLevel>
+        <VersionCommand>
+          <CommandName>Identify</CommandName>
+        </VersionCommand>
+        <DataDefinition>
+          <DataCommand>
+            <Channel>0</Channel>
+            <ChannelName>Pressure Data</ChannelName>
+            <CommandName>Get Channel Data</CommandName>
+            <ChannelYAxis>psi</ChannelYAxis>
+          </DataCommand>
+        </DataDefinition>
+        <EventDefinitions>
+          <!--Input Contacts Event-->
+		  <EventDefinition>
+            <Name>Input Contacts Event</Name>
+			<Type>Event</Type>
+            <Notes>Input Contact Changed</Notes>
+            <Expression>{0},{1},{2},{3},{4}</Expression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Start/Stop Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Pause/Resume Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Program Wait Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Error Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Soft Power Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <!--Error Event-->
+		  <EventDefinition>
+            <Name>Error Event</Name>
+			<Type>Event</Type>
+            <Expression>{0}</Expression>
+            <Notes>Error</Notes>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Message</ParameterName>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <!--Event-->
+		  <EventDefinition>
+            <Name>Event</Name>
+			<Type>Event</Type>
+            <Notes>Event</Notes>
+            <Expression>{0}</Expression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Message</ParameterName>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <!--Dispense Complete-->
+		  <EventDefinition>
+            <Name>Dispense Complete</Name>
+			<Type>Status</Type>
+            <Expression>{0},{1},{2}</Expression>
+            <Notes>Sent when the dispense by time or dispense by volume completes</Notes>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Dispense Mode</ParameterName>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Dispensed</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Requested</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <!--Boot Sequence Complete-->
+		  <EventDefinition>
+            <Name>Boot Sequence Complete</Name>
+			<Type>Status</Type>
+            <Notes>Sent when the pump is up and running, ready to accept commands</Notes>
+          </EventDefinition>
+          <!--Get Pressure-->
+          <EventDefinition>
+            <Name>Get Pressure</Name>
+			<Type>Error</Type>
+            <Expression>{0}</Expression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Error</ParameterName>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <EventDefinition>
+            <Name>Pressure Sample</Name>
+			<Type>Data</Type>
+            <Notes>The current pressure samples</Notes>
+            <Expression>{0}|{1},{2}|{3},{4}|{5},{6}|{7},{8}|{9},{10}|{11},{12}|{13},{14}|{15},{16}|{17},{18}|{19}</Expression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Time 1</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Pressure 1</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Time 2</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Pressure 2</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Time 3</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>5</ParameterId>
+                <ParameterName>Pressure 3</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>6</ParameterId>
+                <ParameterName>Time 4</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>7</ParameterId>
+                <ParameterName>Pressure 4</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>8</ParameterId>
+                <ParameterName>Time 5</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>9</ParameterId>
+                <ParameterName>Pressure 5</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>10</ParameterId>
+                <ParameterName>Time 6</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>11</ParameterId>
+                <ParameterName>Pressure 6</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>12</ParameterId>
+                <ParameterName>Time 7</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>13</ParameterId>
+                <ParameterName>Pressure 7</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>14</ParameterId>
+                <ParameterName>Time 8</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>15</ParameterId>
+                <ParameterName>Pressure 8</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>16</ParameterId>
+                <ParameterName>Time 9</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>17</ParameterId>
+                <ParameterName>Pressure 9</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>18</ParameterId>
+                <ParameterName>Time 10</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>milliseconds</ParameterUnits>
+              </Parameter>
+              <Parameter>
+                <ParameterId>19</ParameterId>
+                <ParameterName>Pressure 10</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>BAR</ParameterUnits>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+          <EventDefinition>
+            <Name>Pump Run Status</Name>
+			<Type>Status</Type>
+            <Notes>Status of the pump run</Notes>
+            <Expression>{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}</Expression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Current Flow Rate</ParameterName>
+                <ParameterUnits>mL/min</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Current Pressure</ParameterName>
+                <ParameterUnits>psi</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Current Solvent Level</ParameterName>
+                <ParameterUnits>mL</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Current State</ParameterName>
+                <ParameterUnits>Running,Run Complete,Paused,Stopped</ParameterUnits>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Current Error Condition</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>5</ParameterId>
+                <ParameterName>Method Name</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>6</ParameterId>
+                <ParameterName>Current Method Loop</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>7</ParameterId>
+                <ParameterName>Current Method Event Number</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>8</ParameterId>
+                <ParameterName>Pause Timer Time</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>9</ParameterId>
+                <ParameterName>Current Timestamp</ParameterName>
+                <ParameterUnits>seconds</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>10</ParameterId>
+                <ParameterName>Ramp Time</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>11</ParameterId>
+                <ParameterName>Loop Time</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>12</ParameterId>
+                <ParameterName>Current Dispense Time / Volume</ParameterName>
+                <ParameterUnits></ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+              <Parameter>
+                <ParameterId>13</ParameterId>
+                <ParameterName>Operation Time</ParameterName>
+                <ParameterUnits>hours</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </Parameter>
+            </Parameters>
+          </EventDefinition>
+        </EventDefinitions>
+        <CommandDefinitions>		
+		  <!--Restore Factory Defaults-->
+		  <CommandDefinition>
+			<CommandName>Restore Factory Defaults</CommandName>
+			<CommandNotes>Resets all the pump settings and deletes all methods on the instrument.</CommandNotes>
+			<CommandExpression>Restore Factory Defaults</CommandExpression>            
+          </CommandDefinition>
+		  <!--Get Application Versions-->
+		  <CommandDefinition>
+			<CommandName>Get Application Versions</CommandName>
+			<CommandNotes>Gets the application versions of the Linux software.</CommandNotes>
+			<CommandExpression>Get Application Versions</CommandExpression>            
+            <ReturnExpression>{0},{1},{2},{3},{4},{5}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Release Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Main Application Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>GUI Application Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Firmware Updater Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Controller Firmware Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>5</ParameterId>
+                <ParameterName>Pump Firmware Version</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+		  <!--Set Debug Mode-->
+		  <CommandDefinition>
+			<CommandName>Set Debug Mode</CommandName>
+			<CommandNotes>Instructs the instrument to set the mode of debugging.</CommandNotes>
+			<CommandExpression>Debug,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Mode</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterDefault>All</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+		  <!--Set Debug Pressure-->
+		  <CommandDefinition>
+			<CommandName>Set Debug Pressure</CommandName>
+			<CommandNotes>Debugging command to be able to set pressure.</CommandNotes>
+			<CommandExpression>Set Debug Pressure,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Pressure</ParameterName>
+				<ParameterNotes>Range: 0-700</ParameterNotes>
+				<ParameterUnits>Bar</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+		  <!--Lock-->
+          <CommandDefinition>
+            <CommandName>Lock</CommandName>
+            <CommandNotes>Set the instrument to remote control mode.</CommandNotes>
+            <CommandExpression>Lock</CommandExpression>
+          </CommandDefinition>
+          <!--Lock With Options-->
+          <CommandDefinition>
+            <CommandName>Lock With Options</CommandName>
+            <CommandNotes>Set the instrument to remote control mode.</CommandNotes>
+            <CommandExpression>Lock,{0},{1},{2}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Title</ParameterName>
+                <ParameterType>string</ParameterType>
+				<ParameterNotes>The title to show on the lock screen</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Pump Status Messages</ParameterName>
+                <ParameterType>OnOff</ParameterType>
+                <ParameterDefault>Off</ParameterDefault>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Pump Status Message Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+				<ParameterUnits>milliseconds</ParameterUnits>
+                <ParameterDefault>1000</ParameterDefault>
+				<ParameterNotes>1000 to 60000 ms</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Unlock-->
+          <CommandDefinition>
+            <CommandName>Unlock</CommandName>
+            <CommandNotes>Set the instrument to user control mode.</CommandNotes>
+            <CommandExpression>Unlock</CommandExpression>
+          </CommandDefinition>
+          <!--Set Alarm-->
+          <CommandDefinition>
+            <CommandName>Set Alarm</CommandName>
+            <CommandNotes>Instructs the instrument to control the buzzer.</CommandNotes>
+            <CommandExpression>Set Alarm,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Alarm State</ParameterName>
+                <ParameterType>OnOff</ParameterType>
+                <ParameterDefault>Off</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Start Pressure Samples-->
+          <CommandDefinition>
+            <CommandName>Start Pressure Samples</CommandName>
+            <CommandNotes>Start pressure data stream.</CommandNotes>
+            <CommandExpression>Start Pressure Samples,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Sample Interval</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>msecs</ParameterUnits>
+                <ParameterDefault>1000</ParameterDefault>
+                <ParameterNotes>Range: 200-65000</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Number Of Samples Per Status Message</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Range: 1-10</ParameterNotes>
+                <ParameterDefault>1</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Stop Pressure Samples-->
+          <CommandDefinition>
+            <CommandName>Stop Pressure Samples</CommandName>
+            <CommandNotes>Stop pressure data stream.</CommandNotes>
+            <CommandExpression>Stop Pressure Samples</CommandExpression>
+          </CommandDefinition>
+          <!--Set Inlet Pressure-->
+          <CommandDefinition>
+            <CommandName>Set Inlet Pressure</CommandName>
+            <CommandNotes>Set the pump inlet pressure.</CommandNotes>
+            <CommandExpression>Set Inlet Pressure,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Inlet Pressure</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>0</ParameterDefault>
+                <ParameterNotes>Pressure units in BAR.  Range 0-100.</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Inlet Pressure-->
+          <CommandDefinition>
+            <CommandName>Get Inlet Pressure</CommandName>
+            <CommandNotes>Get pump inlet pressure.</CommandNotes>
+            <CommandExpression>Get Inlet Pressure</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Inlet Pressure</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Home-->
+          <CommandDefinition>
+            <CommandName>Home</CommandName>
+            <CommandNotes>Home the pump.</CommandNotes>
+            <CommandExpression>Home</CommandExpression>
+          </CommandDefinition>
+          <!--Set Compressibility-->
+          <CommandDefinition>
+            <CommandName>Set Compressibility By Value</CommandName>
+            <CommandNotes>Sets the compressibility to the compressibility value.</CommandNotes>
+            <CommandExpression>Set Compressibility,0,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Compressibility</ParameterName>
+                <ParameterNotes>The compressibility value for the liquid.</ParameterNotes>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>1</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Set Compressibility By Index-->
+          <CommandDefinition>
+            <CommandName>Set Compressibility By Index</CommandName>
+            <CommandNotes>Sets the compressibility by the compressility index.</CommandNotes>
+            <CommandExpression>Set Compressibility,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Liquid Index</ParameterName>
+                <ParameterNotes>1=Water,2=Methanol,3=Acetonitrile,4=Tetrahydrofuran,5=Benzene,6=n-Hexane,7=Carbon Tetrachloride,8=Water-Methanol, 50-50,9=Chloroform,10=Methylene Chloride,11=Ethanol,12=Acetone,13=n-Heptane,14=Diethyl Ether</ParameterNotes>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>1</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Set Compressibility Coefficients-->
+          <CommandDefinition>
+            <CommandName>Set Compressibility Coefficients</CommandName>
+            <CommandNotes>Sets a custom compressibility using the coefficients.</CommandNotes>
+            <CommandExpression>Set Compressibility Coeff,0,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Coefficient A</ParameterName>
+                <ParameterNotes>First compressibility coefficient</ParameterNotes>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Coefficient B</ParameterName>
+                <ParameterNotes>Second compressibility coefficient</ParameterNotes>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Compressibility-->
+          <CommandDefinition>
+            <CommandName>Get Compressibility</CommandName>
+            <CommandNotes>Gets the current compressibility setting.</CommandNotes>
+            <CommandExpression>Get Compressibility</CommandExpression>
+            <ReturnExpression>{0},{1},{2},{3},{4}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Solution</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Compressibility</ParameterName>
+                <ParameterUnits>mBar-1</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Adjusted Compressibility</ParameterName>
+                <ParameterUnits>mBar-1</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Coefficient 1</ParameterName>
+                <ParameterUnits>Beta</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Coefficient 2</ParameterName>
+                <ParameterUnits>Mu</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Dispense by Volume-->
+          <CommandDefinition>
+            <CommandName>Dispense by Volume</CommandName>
+            <CommandNotes>Instructs the instrument to dispense a fixed volume a particular rate.</CommandNotes>
+            <CommandExpression>Dispense by Volume,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>mL/min</ParameterUnits>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Volume</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>mL</ParameterUnits>
+                <ParameterDefault>1</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Dispense by Time-->
+          <CommandDefinition>
+            <CommandName>Dispense by Time</CommandName>
+            <CommandNotes>Instructs the pump to dispense for a period of time.</CommandNotes>
+            <CommandExpression>Dispense by Time,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>mL/min</ParameterUnits>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Duration</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>min</ParameterUnits>
+                <ParameterDefault>1</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Dispense Volume-->
+          <CommandDefinition>
+            <CommandName>Get Dispense Volume</CommandName>
+            <CommandNotes>Gets the total volume dispensed during a dispense.</CommandNotes>
+            <CommandExpression>Get Dispense Volume</CommandExpression>
+            <ReturnExpression>{0},{1}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Dispensed Volume</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>mL</ParameterUnits>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Total Volume to Dispense</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>mL</ParameterUnits>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Get Pressure-->
+          <CommandDefinition>
+            <CommandName>Get Pressure</CommandName>
+            <CommandNotes>Get the current pressure (bar).</CommandNotes>
+            <CommandExpression>Get Pressure</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Current Pressure (bar)</ParameterName>
+                <ParameterUnits>BAR</ParameterUnits>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Get Input Contacts-->
+          <CommandDefinition>
+            <CommandName>Get Input Contacts</CommandName>
+            <CommandNotes>Get the state of the input contacts.</CommandNotes>
+            <CommandExpression>Get Input Contacts</CommandExpression>
+            <ReturnExpression>{0},{1},{2},{3},{4}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Start/Stop Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Pause/Resume Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Program Wait Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Error Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Soft Power Input</ParameterName>
+                <ParameterType>OpenClosed</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Get Output Contacts-->
+          <CommandDefinition>
+            <CommandName>Get Output Contacts</CommandName>
+            <CommandNotes>Gets the state of the output contacts.</CommandNotes>
+            <CommandExpression>Get Output Contacts</CommandExpression>
+            <ReturnExpression>{0},{1}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>24V Output</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Relay 1</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Output Contacts-->
+          <CommandDefinition>
+            <CommandName>Set Output Contacts</CommandName>
+            <CommandNotes>Instructs the instrument to control the output contacts.</CommandNotes>
+            <CommandExpression>Output Contacts,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>24V Output</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterDefault>Open</ParameterDefault>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Relay 1</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterDefault>Open</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Motor Status-->
+          <CommandDefinition>
+            <CommandName>Get Motor Status</CommandName>
+            <CommandNotes>Get the Motor Status.</CommandNotes>
+            <CommandExpression>Get Motor Status</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Motor Status</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Set Pump Head-->
+          <CommandDefinition>
+            <CommandName>Set Pump Head</CommandName>
+            <CommandNotes>Set the pump size.</CommandNotes>
+            <CommandExpression>Set Pump Head,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Pump Head</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterDefault>5 SS</ParameterDefault>
+                <ParameterNotes>5 SS, 10 SS</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Pump Head-->
+          <CommandDefinition>
+            <CommandName>Get Pump Head</CommandName>
+            <CommandNotes>Get the current pump head size setting.</CommandNotes>
+            <CommandExpression>Get Pump Head</CommandExpression>
+            <ReturnExpression>{0},{1},{2},{3},{4}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Head</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Minimum Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Flow rate units in mL/min</ParameterNotes>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Maximum Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Flow rate units in mL/min</ParameterNotes>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Minimum Pressure</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Pressure units in BAR</ParameterNotes>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Maximum Pressure</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Pressure units in BAR</ParameterNotes>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Get Pump Time-->
+          <CommandDefinition>
+            <CommandName>Get Pump Time</CommandName>
+            <CommandNotes>Gets the duration the pump has been running.</CommandNotes>
+            <CommandExpression>Get Pump Time</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Time</ParameterName>
+                <ParameterUnits>min</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Set Pump Refill Time-->
+          <CommandDefinition>
+            <CommandName>Set Pump Refill Time</CommandName>
+            <CommandNotes>Set the duration of the refill stroke.</CommandNotes>
+            <CommandExpression>Set Pump Refill Time,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Refill Time</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>seconds</ParameterUnits>
+                <ParameterDefault>0.125</ParameterDefault>
+                <ParameterNotes>Range is 0.125 to 1.0</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Pump Refill Time-->
+          <CommandDefinition>
+            <CommandName>Get Pump Refill Time</CommandName>
+            <CommandNotes>Get the duration of the refill stroke.</CommandNotes>
+            <CommandExpression>Get Pump Refill Time</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Refill Time</ParameterName>
+                <ParameterUnits>seconds</ParameterUnits>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+		  <!--Stop Pump-->
+          <CommandDefinition>
+            <CommandName>Stop Pump</CommandName>
+            <CommandNotes>Stops the pump.</CommandNotes>
+            <CommandExpression>Stop Pump,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Emergency Stop</ParameterName>
+                <ParameterType>Boolean</ParameterType>
+				<ParameterDefault>false</ParameterDefault>
+				<ParameterNotes>Should the pump stop and then ignore further pumping until Clear Error is sent</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Set Pump Flow Rate-->
+          <CommandDefinition>
+            <CommandName>Set Pump Flow Rate With Options</CommandName>
+            <CommandNotes>Sets the pump flow rate with all the parameter options.</CommandNotes>
+            <CommandExpression>Set Pump Flow Rate,{0},{1},{2},{3}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>ml/min</ParameterUnits>
+                <ParameterDefault>1.0</ParameterDefault>
+                <ParameterNotes>Flow Rate (ml/min)</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Acceleration</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>ml/s/s</ParameterUnits>
+                <ParameterDefault>100</ParameterDefault>
+                <ParameterNotes>Acceleration (ml/s/s)</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Power</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>%</ParameterUnits>
+                <ParameterDefault>95</ParameterDefault>
+                <ParameterNotes>Motor Power (%)</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Percent Fast Decay</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>240</ParameterDefault>
+                <ParameterNotes>Range 0-255.</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Set Pump Flow Rate-->
+          <CommandDefinition>
+            <CommandName>Set Pump Flow Rate</CommandName>
+            <CommandNotes>Sets the pump flow rate.</CommandNotes>
+            <CommandExpression>Set Pump Flow Rate,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Flow Rate</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterUnits>ml/min</ParameterUnits>
+                <ParameterDefault>1.0</ParameterDefault>
+                <ParameterNotes>Flow Rate (ml/min)</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Pump Flow Rate-->
+          <CommandDefinition>
+            <CommandName>Get Pump Flow Rate</CommandName>
+            <CommandNotes>Get the Flow Rate of the pump.</CommandNotes>
+            <CommandExpression>Get Pump Flow Rate</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Flow Rate</ParameterName>
+                <ParameterUnits>mL/min</ParameterUnits>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!--Clear Error-->-->
+          <CommandDefinition>
+            <CommandName>Clear Error</CommandName>
+            <CommandNotes>Instructs the instrument to clear existing errors.</CommandNotes>
+            <CommandExpression>Clear Error,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Mode</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterUnits/>
+                <ParameterDefault>All</ParameterDefault>
+                <ParameterNotes>'All' to clear all errors or blank to clear most recent error, 'Log' to clear the command log</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Identify -->
+          <CommandDefinition>
+            <CommandName>Identify</CommandName>
+            <CommandNotes>Instrument name and version.</CommandNotes>
+            <CommandExpression>Identify</CommandExpression>
+            <ReturnExpression>{0},{1}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Identity</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Version Number</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Get Device ID-->
+          <CommandDefinition>
+            <CommandName>Get Device ID</CommandName>
+            <CommandNotes>Instrument controller board Device ID and version.</CommandNotes>
+            <CommandExpression>Get Device ID</CommandExpression>
+            <ReturnExpression>{0},{1}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Device ID</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Version Number</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Get Serial Number -->
+          <CommandDefinition>
+            <CommandName>Get Serial Number</CommandName>
+            <CommandNotes>Instrument serial number.</CommandNotes>
+            <CommandExpression>Get NVM String,Serial#</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Serial Number</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set Serial Number -->
+          <CommandDefinition>
+            <CommandName>Set Serial Number</CommandName>
+            <CommandNotes>Set the instrument serial number.</CommandNotes>
+            <CommandExpression>Set NVM String,Serial#,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Serial Number</ParameterName>
+                <ParameterType>String</ParameterType>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!--Get Error-->
+          <CommandDefinition>
+            <CommandName>Get Error</CommandName>
+            <CommandNotes>Instructs the instrument to report existing errors.</CommandNotes>
+            <CommandExpression>Get Error</CommandExpression>
+            <ReturnExpression>{0},{1}|{2}|{3}|{4}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>State</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Error Index</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>2</ParameterId>
+                <ParameterName>Command Causing Error</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>3</ParameterId>
+                <ParameterName>Return Code</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>4</ParameterId>
+                <ParameterName>Error Description</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set NVM -->
+          <CommandDefinition>
+            <CommandName>Set NVM</CommandName>
+            <CommandNotes>Instructs the instrument to set the specified NV memory parameters.</CommandNotes>
+            <CommandExpression>Set NVM,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Index</ParameterName>
+                <ParameterType>number</ParameterType>
+                <ParameterNotes>Parameter Index</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Value</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Parameter Value</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Get NVM-->
+          <CommandDefinition>
+            <CommandName>Get NVM</CommandName>
+            <CommandNotes>Instructs the instrument to report the specified NV memory parameter.</CommandNotes>
+            <CommandExpression>Get NVM,{0}</CommandExpression>
+            <ReturnExpression>{0},{1}</ReturnExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Index</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterNotes>Parameter Index Values: Vary depending on product-specific memory map definitions.</ParameterNotes>
+              </Parameter>
+            </Parameters>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Index</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+              <ReturnParameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Value</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set NVM String -->
+          <CommandDefinition>
+            <CommandName>Set NVM String</CommandName>
+            <CommandNotes>Instructs the instrument to set the specified NV memory string parameters.</CommandNotes>
+            <CommandExpression>Set NVM String,{0},{1}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Index</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterNotes>Parameter index string</ParameterNotes>
+              </Parameter>
+              <Parameter>
+                <ParameterId>1</ParameterId>
+                <ParameterName>Value</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterNotes>Parameter Value</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Get NVM String-->
+          <CommandDefinition>
+            <CommandName>Get NVM String</CommandName>
+            <CommandNotes>Instructs the instrument to report the specified NV memory string parameter.</CommandNotes>
+            <CommandExpression>Get NVM String,{0}</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Index</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterNotes>Parameter Index Values: Vary depending on product-specific memory map definitions.</ParameterNotes>
+              </Parameter>
+            </Parameters>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Value</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Relax Motors -->
+          <CommandDefinition>
+            <CommandName>Relax Motors</CommandName>
+            <CommandNotes>Instructs the instrument to relax the pump motor.</CommandNotes>
+            <CommandExpression>Relax Motors</CommandExpression>
+          </CommandDefinition>
+          <!-- Get Piston Strokes -->
+          <CommandDefinition>
+            <CommandName>Get Piston Strokes</CommandName>
+            <CommandNotes>Get the number of piston strokes.</CommandNotes>
+            <CommandExpression>Get Maintenance Counter</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Piston Strokes</ParameterName>
+                <ParameterType>Number</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set Piston Strokes -->
+          <CommandDefinition>
+            <CommandName>Set Piston Strokes</CommandName>
+            <CommandNotes>Sets the piston strokes.</CommandNotes>
+            <CommandExpression>Set Maintenance Counter,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Piston Strokes</ParameterName>
+                <ParameterType>Number</ParameterType>
+                <ParameterDefault>0</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Reset -->
+          <CommandDefinition>
+            <CommandName>Reset</CommandName>
+            <CommandNotes>Instructs the instrument to perform a soft reset.</CommandNotes>
+            <CommandExpression>Reset</CommandExpression>
+          </CommandDefinition>
+          <!-- Reset NVM -->
+          <CommandDefinition>
+            <CommandName>Reset NVM</CommandName>
+            <CommandNotes>Instructs the instrument to reset its NVM back to default</CommandNotes>
+            <CommandExpression>Reset NVM,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Reset Mode</ParameterName>
+                <ParameterType>String</ParameterType>
+                <ParameterDefault>1</ParameterDefault>
+                <ParameterNotes>Reset Mode Values:  "0" - Resets all to defaults but:  Instrument Name, Pump Board Name, Serial Number, Hardware Configuration (Controller Board), Hardware Configuration (Pump Board); "1" - Resets all to defaults but:  Instrument Name, Pump Board Name, Serial Number</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Get Pump Head Install Date -->
+          <CommandDefinition>
+            <CommandName>Get Install Date of Pump Head</CommandName>
+            <CommandNotes>Get the date the pump head was installed.</CommandNotes>
+            <CommandExpression>Get NVM String,PHinstall</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set Pump Head Install Date -->
+          <CommandDefinition>
+            <CommandName>Set Install Date of Pump Head</CommandName>
+            <CommandNotes>Set the date the pump head was installed.</CommandNotes>
+            <CommandExpression>Set NVM String,PHinstall,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+				<ParameterNotes>Preferred format is mm-dd-yyyy</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Get Check Valve Install Date -->
+          <CommandDefinition>
+            <CommandName>Get Install Date of Check Valve</CommandName>
+            <CommandNotes>Get the date the check valve was installed.</CommandNotes>
+            <CommandExpression>Get NVM String,CVinstall</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set Check Valve Install Date -->
+          <CommandDefinition>
+            <CommandName>Set Install Date of Check Valve</CommandName>
+            <CommandNotes>Set the date the check valve was installed.</CommandNotes>
+            <CommandExpression>Set NVM String,CVinstall,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+				<ParameterNotes>Preferred format is mm-dd-yyyy</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>
+          <!-- Get Piston Seal Install Date -->
+          <CommandDefinition>
+            <CommandName>Get Install Date of Piston Seal</CommandName>
+            <CommandNotes>Get the date the piston seal was installed.</CommandNotes>
+            <CommandExpression>Get NVM String,PSinstall</CommandExpression>
+            <ReturnExpression>{0}</ReturnExpression>
+            <ReturnParameters>
+              <ReturnParameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+              </ReturnParameter>
+            </ReturnParameters>
+          </CommandDefinition>
+          <!-- Set Check Valve Install Date -->
+          <CommandDefinition>
+            <CommandName>Set Install Date of Piston Seal</CommandName>
+            <CommandNotes>Set the date the piston seal was installed.</CommandNotes>
+            <CommandExpression>Set NVM String,PSinstall,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Date</ParameterName>
+                <ParameterType>String</ParameterType>
+				<ParameterNotes>Preferred format is mm-dd-yyyy</ParameterNotes>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>  
+          <!-- Send Pump Status -->
+          <CommandDefinition>
+            <CommandName>Send Pump Run Status</CommandName>
+            <CommandNotes>Request that the pump send a Pump Run Status event.</CommandNotes>
+            <CommandExpression>Send Pump Run Status</CommandExpression>
+          </CommandDefinition>
+          <!-- Set Remote Pressure Error -->
+          <CommandDefinition>
+            <CommandName>Set Remote Pressure Error</CommandName>
+            <CommandNotes>Turns on/off pressure error monitoring when under external control.  Defaults to off anytime the lock command is executed.</CommandNotes>
+            <CommandExpression>Set Remote Pressure Error,{0}</CommandExpression>
+            <Parameters>
+              <Parameter>
+                <ParameterId>0</ParameterId>
+                <ParameterName>Error Checking</ParameterName>
+                <ParameterType>OnOff</ParameterType>
+                <ParameterDefault>Off</ParameterDefault>
+              </Parameter>
+            </Parameters>
+          </CommandDefinition>  
+        </CommandDefinitions>
+      </Device>
+	</Devices>
+  </InstructionSet>
+</Gilson>
