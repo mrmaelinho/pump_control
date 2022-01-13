@@ -9,7 +9,7 @@ class Pump:
     Pump's main attribute self.ser is a serial.Serial instance.
     """
 
-    def __init__(self,port_name):
+    def __init__(self,port_name, pump_name):
         self.ser = serial.Serial(port=port_name,\
                                     baudrate=115200,\
                                     # parity=PARITY_NONE,\
@@ -19,48 +19,91 @@ class Pump:
                                     # stopbits=STOPBITS_ONE,\
                                     timeout=1)
         self.ser.close()
+        self.name = pump_name
+
+    def open(self):
+        self.ser.open()
+        buff = self.ser.readall()
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print(buff.decode())
+        print('{} {} communication is open.'.format(ts,self.name))
+
+    def close(self):
+        self.ser.close()
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print(buff.decode())
+        print('{} {} communication is closed.'.format(ts,self.name))
 
     def lock(self):
         self.ser.open()
         self.ser.write('?[1007,0,1,CMD,SYN,0(Lock)]?\r\n'.encode())
         self.ser.close()
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print('{} Pump locked'.format(ts))
+        print(buff.decode())
+        print('{} {} locked.'.format(ts,self.name))
 
     def unlock(self):
         self.ser.open()
         self.ser.write('?[1007,0,1,CMD,SYN,0(Unlock)]?\r\n'.encode())
         self.ser.close()
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print('{} Pump unlocked'.format(ts))
+        print(buff.decode())
+        print('{} {} unlocked.'.format(ts,self.name))
 
     def flow(self,flowrate):
         self.ser.open()
         message = '?[1002,0,1,CMD,SYN,0(Set Pump Flow Rate,%.3f)]?\r\n'%flowrate
         self.ser.write(message.encode())
         self.ser.close()
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print('{} Pumping at {} mL/min'.format(ts, flowrate))
+        print(buff.decode())
+        print('{} {} pumping at {} mL/min.'.format(ts, self.name, flowrate))
 
     def stop(self):
         self.ser.open()
         self.ser.write('?[1003,0,1,CMD,SYN,0(Stop Pump,false)]?\r\n'.encode())
         self.ser.close()
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print('{} Pump stopped'.format(ts))
+        print(buff.decode())
+        print('{} {} stopped.'.format(ts,self.name))
 
     def start_pressure_samples(self,datapoint_interval):
         message = '?[1003,0,1,CMD,SYN,0(Start pressure samples,{},1)]?\r\n'.format(datapoint_interval)
         self.ser.open()
         self.ser.write(message.encode())
         self.ser.close()
-        print('{} Started pressure sampling every {} ms'.format(ts,datapoint_interval))
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print(buff.decode())
+        print('{} {} started pressure sampling every {} ms.'.format(ts,self.name,datapoint_interval))
 
     def stop_pressure_samples(self):
         self.ser.open()
         self.ser.write('?[1003,0,1,CMD,SYN,0(Stop)]?\r\n'.encode())
         self.ser.close()
-        print('{} Stopped pressure sampling'.format(ts))
+        self.ser.open()
+        buff = self.ser.readall()
+        self.ser.close()
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print(buff.decode())
+        print('{} {} stopped pressure sampling.'.format(ts, self.name))
 
     def read_messages(self,duration):
         self.ser.open()
@@ -71,13 +114,5 @@ class Pump:
                 self.ser.readline()
         self.ser.close()
 
-# if __name__ == "__main__":
-#     pump1 = serial.Serial(port='COM9',\
-#                           baudrate=115200,\
-#                         # parity=PARITY_NONE,\
-#                         # bytesize=EIGHTBITS,\
-#                           dsrdtr=True,\
-#                           rtscts=True,\
-#                         # stopbits=STOPBITS_ONE,\
-#                           timeout=1)
-#     pump1.close()
+if __name__ == "__main__":
+    pump1 = Pump('COM9','Pump 1')
