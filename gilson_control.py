@@ -172,11 +172,12 @@ class Pump:
                 self.ser.readline()
         self.ser.close()
 
-    def plot_pressure_flowrate(self,frame,t0, ax, pressure_line):
+    def plot_pressure_flowrate(self,frame,t0, ax1, ax2, pressure_line, flowrate_line):
         self.pressure.append(self.get_pressure())
         self.flowrate.append(self.get_flowrate())
         self.t.append(time.time()-t0)
-        ax1.set_xlim(0,self.t[-1])
+        ax2.set_xlim(0,self.t[-1])
+        ax1.sharex(ax2)
         pressure_line.set_data(self.t,self.pressure)
         return ax,
 
@@ -189,6 +190,7 @@ def anim_pressure(pump):
     ax1.set_title('{} pressure'.format(pump.name))
     ax1.set_ylim(0,40)
     ax1.grid()
+    ax1.set_xticklabels([])
     pressure_line, = ax1.plot([],[],label='pump pressure')
     ax2 = fig.add_subplot(212)
     ax2.set_title('{} flowrate'.format(pump.name))
