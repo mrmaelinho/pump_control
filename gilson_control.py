@@ -64,6 +64,7 @@ class Pump:
         print('{} {} unlocked.'.format(ts,self.name))
 
     def start_flow(self,flowrate):
+        self.lock()
         self.ser.open()
         message = '?[1002,0,1,CMD,SYN,0(Set Pump Flow Rate,%.3f)]?\r\n'%flowrate
         self.ser.write(message.encode())
@@ -76,6 +77,7 @@ class Pump:
         print('{} {} pumping at {} mL/min.'.format(ts, self.name, flowrate))
 
     def dispense_volume(self, volume, flowrate):
+        self.lock()
         self.ser.open()
         message = '?[1002,0,1,CMD,SYN,0(Dispense by Volume,%.3f,%.3f)]?\r\n'%(flowrate,volume)
         self.ser.write(message.encode())
@@ -88,6 +90,7 @@ class Pump:
         print('{} {} dispensing {} mL at {} mL/min.'.format(ts, self.name, volume, flowrate))
 
     def dispense_duration(self, duration, flowrate):
+        self.lock()
         self.ser.open()
         message = '?[1002,0,1,CMD,SYN,0(Dispense by Time,%.3f,%.2f)]?\r\n'%(flowrate,duration)
         self.ser.write(message.encode())
@@ -109,6 +112,7 @@ class Pump:
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
         print('{} {} stopped.'.format(ts,self.name))
+        self.unlock()
 
     def start_pressure_samples(self,datapoint_interval):
         message = '?[1003,0,1,CMD,SYN,0(Start pressure samples,{},1)]?\r\n'.format(datapoint_interval)
