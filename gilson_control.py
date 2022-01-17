@@ -1,6 +1,8 @@
 import serial
 import time
 import datetime
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class Pump:
     """
@@ -17,9 +19,11 @@ class Pump:
                                     dsrdtr=True,\
                                     rtscts=True,\
                                     # stopbits=STOPBITS_ONE,\
-                                    timeout=1)
+                                    timeout=0.5)
         self.ser.close()
         self.name = pump_name
+        self.pressure = list()
+        self.t = list()
 
     def open(self):
         self.ser.open()
@@ -87,10 +91,10 @@ class Pump:
         self.ser.open()
         self.ser.write(message.encode())
         self.ser.close()
-        self.ser.open()
-        buff = self.ser.readall()
-        self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        self.ser.open()
+        buff = self.ser.readline()
+        self.ser.close()
         print(buff.decode())
         print('{} {} started pressure sampling every {} ms.'.format(ts,self.name,datapoint_interval))
 
@@ -105,6 +109,19 @@ class Pump:
         print(buff.decode())
         print('{} {} stopped pressure sampling.'.format(ts, self.name))
 
+    def get_pressure(self):
+        self.ser.open()
+        self.ser.write('?[1003,0,1,CMD,SYN,0(Get Pressure)]?\r\n'.encode())
+        self.ser.close()
+        self.ser.open()
+        buff = self.ser.readline()
+        self.ser.close()
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        # print(buff.decode())
+        _pressure = float(buff.decode()[-10:-5])
+        # print('{} {} has pressure {} bar.'.format(ts, self.name, _pressure))
+        return _pressure
+
     def read_messages(self,duration):
         self.ser.open()
         t0 = time.time()
@@ -113,6 +130,26 @@ class Pump:
             if self.ser.inWaiting() > 0:
                 self.ser.readline()
         self.ser.close()
+
+    def plot_pressure(self,frame,t0, ax, pressure_line):
+        self.pressure.append(pump1.get_pressure())
+        self.t.append(time.time()-t0)
+        ax.set_xlim(0,self.t[-1])
+        pressure_line.set_data(self.t,self.pressure)
+        return ax,
+
+def anim_pressure(pump):
+    t0 = time.time()
+    pressure = list()
+    t = list()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set_ylim(0,40)
+    ax.grid()
+    pressure_line, = ax.plot([],[],label='pump pressure')
+    anim = animation.FuncAnimation(fig, pump.plot_pressure, fargs=[t0, ax, pressure_line], frames=None, blit=False, interval=25, repeat=True)
+    fig.show()
+    return anim
 
 if __name__ == "__main__":
     pump1 = Pump('COM9','Pump 1')
