@@ -144,11 +144,24 @@ class Pump:
         self.ser.open()
         buff = self.ser.readline()
         self.ser.close()
-        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        #ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         # print(buff.decode())
         _pressure = float(buff.decode()[-10:-5])
         # print('{} {} has pressure {} bar.'.format(ts, self.name, _pressure))
         return _pressure
+    
+    def get_flowrate(self):
+        self.ser.open()
+        self.ser.write('?[1003,0,1,CMD,SYN,0(Get Pump Flow Rate)]?\r\n'.encode())
+        self.ser.close()
+        self.ser.open()
+        buff = self.ser.readline()
+        self.ser.close()
+        #ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        # print(buff.decode())
+        _flowrate = float(buff.decode()[-10:-5])
+        # print('{} {} has pressure {} bar.'.format(ts, self.name, _flowrate)
+        return _flowrate
 
     def read_messages(self,duration):
         self.ser.open()
@@ -159,10 +172,11 @@ class Pump:
                 self.ser.readline()
         self.ser.close()
 
-    def plot_pressure(self,frame,t0, ax, pressure_line):
-        self.pressure.append(pump1.get_pressure())
+    def plot_pressure_flowrate(self,frame,t0, ax, pressure_line):
+        self.pressure.append(self.get_pressure())
+        self.flowrate.append(self.get_flowrate())
         self.t.append(time.time()-t0)
-        ax.set_xlim(0,self.t[-1])
+        ax1.set_xlim(0,self.t[-1])
         pressure_line.set_data(self.t,self.pressure)
         return ax,
 
@@ -171,12 +185,17 @@ def anim_pressure(pump):
     pressure = list()
     t = list()
     fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.set_title('{} pressure'.format(pump.name))
-    ax.set_ylim(0,40)
-    ax.grid()
-    pressure_line, = ax.plot([],[],label='pump pressure')
-    anim = animation.FuncAnimation(fig, pump.plot_pressure, fargs=[t0, ax, pressure_line], frames=None, blit=False, interval=25, repeat=True)
+    ax1 = fig.add_subplot(211)
+    ax1.set_title('{} pressure'.format(pump.name))
+    ax1.set_ylim(0,40)
+    ax1.grid()
+    pressure_line, = ax1.plot([],[],label='pump pressure')
+    ax2 = fig.add_subplot(212)
+    ax2.set_title('{} flowrate'.format(pump.name))
+    ax2.set_ylim(0,5)
+    ax2.grid()
+    flowrate_line, = ax2.plot([],[],label='pump flowrate')
+    anim = animation.FuncAnimation(fig, pump.plot_pressure_flowrate, fargs=[t0, ax1, ax2, pressure_line, flowrate_line], frames=None, blit=False, interval=25, repeat=True)
     fig.show()
     return anim
 
