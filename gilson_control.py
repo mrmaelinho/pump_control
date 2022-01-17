@@ -144,6 +144,7 @@ def anim_pressure(pump):
     t = list()
     fig = plt.figure()
     ax = fig.add_subplot(111)
+    ax.set_title('{} pressure'.format(pump.name))
     ax.set_ylim(0,40)
     ax.grid()
     pressure_line, = ax.plot([],[],label='pump pressure')
