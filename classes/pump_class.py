@@ -211,6 +211,3 @@ def anim_pressure(pump):
     anim = animation.FuncAnimation(fig, pump.plot_pressure_flowrate, fargs=[t0, ax1, ax2, pressure_line, flowrate_line], frames=None, blit=False, interval=5000, repeat=True)
     fig.show()
     return anim
-
-# if __name__ == "__main__":
-#     pump1 = Pump('COM9','Pump 1')
