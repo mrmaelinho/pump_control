@@ -5,6 +5,7 @@ from serial.tools import list_ports
 import sys
 sys.path.append('.')
 from classes.pump_class import Pump
+from classes.pump_tab_class import Pump_tab
 from functools import partial
 
 
@@ -15,7 +16,6 @@ fenetre.geometry('500x300')
 tabControl = ttk.Notebook(fenetre)
 tabs = list()
 
-## tabs[0] : Connect pump
 tabs.append(ttk.Frame(tabControl))
 tabControl.add(tabs[0], text='Connect pump')
 
@@ -61,111 +61,8 @@ def test_already_connected(com):
     return already_connected
 
 def create_pump_tab():
-    tabs.append(ttk.Frame(tabControl))
-    tabControl.add(tabs[-1], text=pumps[-1].name)
+    tabs.append(Pump_tab(tabControl,pumps[-1]))
 
-    #Lock button
-    Button(tabs[-1],\
-           text = 'Lock pump',\
-           width = 20,\
-           command = pumps[-1].lock)\
-           .grid(row=0,column=0,sticky=W,columnspan=2)
-    #Unlock button
-    Button(tabs[-1],\
-           text = 'Unlock pump',\
-           width = 20,\
-           command = pumps[-1].unlock)\
-           .grid(row=0,column=2,sticky=W,columnspan=2)
-    #Start flow
-    flowrates.append(DoubleVar(value=0.000))
-    ttk.Spinbox(tabs[-1],\
-                from_ = 0,\
-                to = 5,\
-                increment = 0.001,\
-                textvariable = flowrates[tabControl.index(tabControl.select())-1],\
-                width=10)\
-                .grid(row=2,column=0)
-
-    Label(tabs[-1],text = 'mL/min', width=10).grid(row=2, column=1,sticky=W)
-
-    def _start_flow():
-        flowrate = flowrates[tabControl.index(tabControl.select())-1].get()
-        pumps[tabControl.index(tabControl.select())-1].start_flow(flowrate)
-
-    Button(tabs[-1],\
-           text = 'Start flow',\
-           command = _start_flow).grid(row=2,column=2)
-
-    #Stop pumping
-    Button(tabs[-1],\
-           text = 'Stop pump',\
-           width = 20,\
-           bg = 'red',\
-           command = pumps[tabControl.index(tabControl.select())-1].stop)\
-           .grid(row=0,column=4,sticky=W,)
-
-    #Dispense by Volume
-    flowrates_dispenseV.append(DoubleVar(value=0.000))
-    ttk.Spinbox(tabs[-1],\
-                from_ = 0,\
-                to = 5,\
-                increment = 0.001,\
-                textvariable = flowrates_dispenseV[tabControl.index(tabControl.select())-1],\
-                width=10)\
-                .grid(row=3,column=0)
-    Label(tabs[-1],text = 'mL/min', width=10).grid(row=3,column=1)
-
-    volumes.append(DoubleVar(value=0.000))
-    ttk.Spinbox(tabs[-1],\
-                from_ = 0,\
-                to = 100,\
-                increment = 0.001,\
-                textvariable=volumes[tabControl.index(tabControl.select())-1],\
-                width=10)\
-                .grid(row=3,column=2)
-    Label(tabs[-1],text = 'mL', width=10).grid(row=3, column=3,sticky=W)
-
-    def _start_dispenseV():
-        flowrate = flowrates_dispenseT[tabControl.index(tabControl.select())-1].get()
-        time = times[tabControl.index(tabControl.select())-1].get()
-        pumps[tabControl.index(tabControl.select())-1].dispense_volume(volume,flowrate)
-
-    Button(tabs[-1],\
-           text = 'Dispense volume',\
-           command = _start_dispenseV)\
-           .grid(row=3,column=4)
-
-
-    #Dispense by Time
-    flowrates_dispenseT.append(DoubleVar(value=0.000))
-    ttk.Spinbox(tabs[-1],\
-                from_ = 0,\
-                to = 5,\
-                increment = 0.001,\
-                textvariable = flowrates_dispenseT[tabControl.index(tabControl.select())-1],\
-                width=10)\
-                .grid(row=4,column=0)
-    Label(tabs[-1],text = 'mL/min', width=10).grid(row=4,column=1)
-
-    times.append(DoubleVar(value=0.000))
-    ttk.Spinbox(tabs[-1],\
-                from_ = 0,\
-                to = 100,\
-                increment = 0.001,\
-                textvariable=times[tabControl.index(tabControl.select())-1],\
-                width=10)\
-                .grid(row=4,column=2)
-    Label(tabs[-1],text = 'min', width=10).grid(row=4, column=3,sticky=W)
-
-    def _start_dispenseT():
-        flowrate = flowrates_dispenseT[tabControl.index(tabControl.select())-1].get()
-        time = times[tabControl.index(tabControl.select())-1].get()
-        pumps[tabControl.index(tabControl.select())-1].dispense_duration(time,flowrate)
-
-    Button(tabs[-1],\
-           text = 'Dispense duration',\
-           command = _start_dispenseT)\
-           .grid(row=4,column=4)
 
 def connect_pump():
     to_connect = ports_list.curselection()
