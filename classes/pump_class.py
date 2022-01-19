@@ -4,6 +4,7 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+
 class Pump:
     """
     This class represents a Gilson Verity 3011 isocratic pump connected to a PC
@@ -19,15 +20,16 @@ class Pump:
                                     dsrdtr=True,\
                                     rtscts=True,\
                                     # stopbits=STOPBITS_ONE,\
-                                    timeout=0.5)
+                                    timeout=1)
         self.ser.close()
         self.name = pump_name
-        self.pressure = list()
-        self.t = list()
+        self.pressure = [0]
+        self.flowrate = [0]
+        self.t = [0]
 
     def open(self):
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
         print('{} {} communication is open.'.format(ts,self.name))
@@ -35,7 +37,7 @@ class Pump:
     def close(self):
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -46,7 +48,7 @@ class Pump:
         self.ser.write('?[1007,0,1,CMD,SYN,0(Lock)]?\r\n'.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -57,7 +59,7 @@ class Pump:
         self.ser.write('?[1007,0,1,CMD,SYN,0(Unlock)]?\r\n'.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -83,7 +85,7 @@ class Pump:
         self.ser.write(message.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -96,7 +98,7 @@ class Pump:
         self.ser.write(message.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -107,7 +109,7 @@ class Pump:
         self.ser.write('?[1003,0,1,CMD,SYN,0(Stop Pump,false)]?\r\n'.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -131,7 +133,7 @@ class Pump:
         self.ser.write('?[1003,0,1,CMD,SYN,0(Stop)]?\r\n'.encode())
         self.ser.close()
         self.ser.open()
-        buff = self.ser.readall()
+        buff = self.ser.readline()
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
@@ -146,10 +148,14 @@ class Pump:
         self.ser.close()
         #ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         # print(buff.decode())
-        _pressure = float(buff.decode()[-10:-5])
+        try:
+            _pressure = float(buff.decode()[-10:-5])
+        except ValueError:
+            _pressure = self.pressure[-1]
+
         # print('{} {} has pressure {} bar.'.format(ts, self.name, _pressure))
         return _pressure
-    
+
     def get_flowrate(self):
         self.ser.open()
         self.ser.write('?[1003,0,1,CMD,SYN,0(Get Pump Flow Rate)]?\r\n'.encode())
@@ -157,9 +163,12 @@ class Pump:
         self.ser.open()
         buff = self.ser.readline()
         self.ser.close()
-        #ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        # ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         # print(buff.decode())
-        _flowrate = float(buff.decode()[-10:-5])
+        try:
+            _flowrate = float(buff.decode()[-10:-5])
+        except ValueError:
+            _flowrate = self.flowrate[-1]
         # print('{} {} has pressure {} bar.'.format(ts, self.name, _flowrate)
         return _flowrate
 
@@ -174,12 +183,14 @@ class Pump:
 
     def plot_pressure_flowrate(self,frame,t0, ax1, ax2, pressure_line, flowrate_line):
         self.pressure.append(self.get_pressure())
+        time.sleep(3)
         self.flowrate.append(self.get_flowrate())
         self.t.append(time.time()-t0)
         ax2.set_xlim(0,self.t[-1])
         ax1.sharex(ax2)
         pressure_line.set_data(self.t,self.pressure)
-        return ax,
+        flowrate_line.set_data(self.t,self.flowrate)
+        return ax1,ax2
 
 def anim_pressure(pump):
     t0 = time.time()
@@ -197,9 +208,9 @@ def anim_pressure(pump):
     ax2.set_ylim(0,5)
     ax2.grid()
     flowrate_line, = ax2.plot([],[],label='pump flowrate')
-    anim = animation.FuncAnimation(fig, pump.plot_pressure_flowrate, fargs=[t0, ax1, ax2, pressure_line, flowrate_line], frames=None, blit=False, interval=25, repeat=True)
+    anim = animation.FuncAnimation(fig, pump.plot_pressure_flowrate, fargs=[t0, ax1, ax2, pressure_line, flowrate_line], frames=None, blit=False, interval=5000, repeat=True)
     fig.show()
     return anim
 
-if __name__ == "__main__":
-    pump1 = Pump('COM9','Pump 1')
+# if __name__ == "__main__":
+#     pump1 = Pump('COM9','Pump 1')
