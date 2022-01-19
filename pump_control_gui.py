@@ -5,11 +5,12 @@ from serial.tools import list_ports
 import sys
 sys.path.append('.')
 from classes.pump_class import Pump
+from functools import partial
 
 
 fenetre = Tk()
 fenetre.title("Gilson pumps control")
-fenetre.geometry('300x300')
+fenetre.geometry('500x300')
 
 tabControl = ttk.Notebook(fenetre)
 tabs = list()
@@ -26,6 +27,11 @@ for port in ports:
 ports_list.pack()
 
 pumps = list()
+flowrates = list()
+flowrates_dispenseV = list()
+flowrates_dispenseT = list()
+volumes = list()
+times = list()
 
 def test_is_pump(com):
     test_port = serial.Serial(port=com,\
@@ -59,59 +65,108 @@ def create_pump_tab():
     tabControl.add(tabs[-1], text=pumps[-1].name)
 
     #Lock button
-    lock_button = Button(tabs[-1],\
-                        text = 'Lock pump',\
-                        width = 20,\
-                        command = pumps[-1].lock)
-    lock_button.grid(row=0,column=0,sticky=W,columnspan=2)
+    Button(tabs[-1],\
+           text = 'Lock pump',\
+           width = 20,\
+           command = pumps[-1].lock)\
+           .grid(row=0,column=0,sticky=W,columnspan=2)
     #Unlock button
-    unlock_button = Button(tabs[-1],\
-                        text = 'Unlock pump',\
-                        width = 20,\
-                        command = pumps[-1].unlock)
-    unlock_button.grid(row=1,column=0,sticky=W,columnspan=2)
+    Button(tabs[-1],\
+           text = 'Unlock pump',\
+           width = 20,\
+           command = pumps[-1].unlock)\
+           .grid(row=0,column=2,sticky=W,columnspan=2)
     #Start flow
-    flowrate_value = StringVar(value=0.000)
-    flowrate_spinbox = ttk.Spinbox(tabs[-1],\
-                               from_ = 0,\
-                               to = 5,\
-                               increment = 0.001,\
-                               textvariable = flowrate_value,\
-                               width=10)
-    flowrate_spinbox.grid(row=2,column=0)
-    flowrate_label = Label(tabs[-1],text = 'mL/min', width=10)
-    flowrate_label.grid(row=2, column=1,sticky=W)
-    start_flow_button = Button(tabs[-1],\
-                               text = 'Start flow',\
-                               command = lambda : pumps[-1].start_flow(float(flowrate_value.get())))
-    start_flow_button.grid(row=2,column=2)
+    flowrates.append(DoubleVar(value=0.000))
+    ttk.Spinbox(tabs[-1],\
+                from_ = 0,\
+                to = 5,\
+                increment = 0.001,\
+                textvariable = flowrates[tabControl.index(tabControl.select())-1],\
+                width=10)\
+                .grid(row=2,column=0)
+
+    Label(tabs[-1],text = 'mL/min', width=10).grid(row=2, column=1,sticky=W)
+
+    def _start_flow():
+        flowrate = flowrates[tabControl.index(tabControl.select())-1].get()
+        pumps[tabControl.index(tabControl.select())-1].start_flow(flowrate)
+
+    Button(tabs[-1],\
+           text = 'Start flow',\
+           command = _start_flow).grid(row=2,column=2)
+
+    #Stop pumping
+    Button(tabs[-1],\
+           text = 'Stop pump',\
+           width = 20,\
+           bg = 'red',\
+           command = pumps[tabControl.index(tabControl.select())-1].stop)\
+           .grid(row=0,column=4,sticky=W,)
+
     #Dispense by Volume
-    flowrate_value_dispenseV = StringVar(value=0.000)
-    flowrate_spinbox_dispenseV = ttk.Spinbox(tabs[-1],\
-                               from_ = 0,\
-                               to = 5,\
-                               increment = 0.001,\
-                               textvariable = flowrate_value_dispenseV,\
-                               width=10)
-    flowrate_spinbox_dispenseV.grid(row=3,column=0)
-    flowrate_label_dispenseV = Label(tabs[-1],text = 'mL/min', width=10)
-    flowrate_label_dispenseV.grid(row=3,column=1)
+    flowrates_dispenseV.append(DoubleVar(value=0.000))
+    ttk.Spinbox(tabs[-1],\
+                from_ = 0,\
+                to = 5,\
+                increment = 0.001,\
+                textvariable = flowrates_dispenseV[tabControl.index(tabControl.select())-1],\
+                width=10)\
+                .grid(row=3,column=0)
+    Label(tabs[-1],text = 'mL/min', width=10).grid(row=3,column=1)
 
-    volume_value = StringVar(value=0.000)
-    volume_spinbox = ttk.Spinbox(tabs[-1],\
-                               from_ = 0,\
-                               to = 100,\
-                               increment = 0.001,\
-                               textvariable = volume_value,\
-                               width=10)
-    volume_spinbox.grid(row=3,column=2)
-    volume_label = Label(tabs[-1],text = 'mL', width=10)
-    volume_label.grid(row=3, column=3,sticky=W)
+    volumes.append(DoubleVar(value=0.000))
+    ttk.Spinbox(tabs[-1],\
+                from_ = 0,\
+                to = 100,\
+                increment = 0.001,\
+                textvariable=volumes[tabControl.index(tabControl.select())-1],\
+                width=10)\
+                .grid(row=3,column=2)
+    Label(tabs[-1],text = 'mL', width=10).grid(row=3, column=3,sticky=W)
 
-    start_dispenseV_button = Button(tabs[-1],\
-                               text = 'Dispense volume',\
-                               command = lambda : pumps[-1].dispense_volume(float(volume_value.get()),float(flowrate_value_dispenseV.get())))
-    start_dispenseV_button.grid(row=3,column=4)
+    def _start_dispenseV():
+        flowrate = flowrates_dispenseT[tabControl.index(tabControl.select())-1].get()
+        time = times[tabControl.index(tabControl.select())-1].get()
+        pumps[tabControl.index(tabControl.select())-1].dispense_volume(volume,flowrate)
+
+    Button(tabs[-1],\
+           text = 'Dispense volume',\
+           command = _start_dispenseV)\
+           .grid(row=3,column=4)
+
+
+    #Dispense by Time
+    flowrates_dispenseT.append(DoubleVar(value=0.000))
+    ttk.Spinbox(tabs[-1],\
+                from_ = 0,\
+                to = 5,\
+                increment = 0.001,\
+                textvariable = flowrates_dispenseT[tabControl.index(tabControl.select())-1],\
+                width=10)\
+                .grid(row=4,column=0)
+    Label(tabs[-1],text = 'mL/min', width=10).grid(row=4,column=1)
+
+    times.append(DoubleVar(value=0.000))
+    ttk.Spinbox(tabs[-1],\
+                from_ = 0,\
+                to = 100,\
+                increment = 0.001,\
+                textvariable=times[tabControl.index(tabControl.select())-1],\
+                width=10)\
+                .grid(row=4,column=2)
+    Label(tabs[-1],text = 'min', width=10).grid(row=4, column=3,sticky=W)
+
+    def _start_dispenseT():
+        flowrate = flowrates_dispenseT[tabControl.index(tabControl.select())-1].get()
+        time = times[tabControl.index(tabControl.select())-1].get()
+        pumps[tabControl.index(tabControl.select())-1].dispense_duration(time,flowrate)
+
+    Button(tabs[-1],\
+           text = 'Dispense duration',\
+           command = _start_dispenseT)\
+           .grid(row=4,column=4)
+
 def connect_pump():
     to_connect = ports_list.curselection()
     print('Connecting',ports[to_connect[0]],'...')
