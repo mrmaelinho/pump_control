@@ -1,3 +1,5 @@
+#author : Maël Arveiler
+
 from tkinter import *
 from tkinter import ttk
 import serial
@@ -59,12 +61,12 @@ def connect_pump():
     When "connect" button is pressed, checks if the selected port
     is not already connected, then checks if the device on selected port
     is a controllable pump.
-    If both are true, establishes the connection with the pump. 
+    If both are true, establishes the connection with the pump.
     """
     #Gets the port selected in the available COM ports list.
     to_connect = ports_list.curselection()
     print('Connecting',ports[to_connect[0]],'...')
-    
+
     #Check if the COM port is already connected.
     already_connected = test_already_connected(ports[to_connect[0]].name)
     if already_connected:
@@ -81,7 +83,7 @@ def connect_pump():
         else:
             print('Device on port %s is not detected as a pump'%ports[to_connect[0]].name)
 
-if __name__ == '__main__':        
+if __name__ == '__main__':
     #Main GUI window.
     fenetre = Tk()
     fenetre.title("Gilson pumps control")
@@ -95,7 +97,7 @@ if __name__ == '__main__':
     #First tab : connect pumps.
     tabs.append(ttk.Frame(tabControl))
     tabControl.add(tabs[0], text='Connect pump')
-    
+
     #Lists available COM ports in first tab.
     ports = list_ports.comports()
     ports.pop(0)#Removes COM1 which is internal and cannot communicate.
@@ -103,11 +105,11 @@ if __name__ == '__main__':
     for port in ports:
         ports_list.insert(ports.index(port),port.description)
     ports_list.pack()
-    
+
     #Container for pumps (of class Pump) that are connected.
     pumps = list()
-    
+
     #Button to connect the pump selected in the list of available COM ports.
-    connect_button = Button(tabs[0],text='Connect', command = connect_pump).pack()  
+    connect_button = Button(tabs[0],text='Connect', command = connect_pump).pack()
 
     fenetre.mainloop()
