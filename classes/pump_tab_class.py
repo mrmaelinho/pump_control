@@ -1,3 +1,4 @@
+#author : Maël Arveiler
 from tkinter import *
 from tkinter import ttk
 import serial
