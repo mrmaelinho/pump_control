@@ -7,32 +7,44 @@ sys.path.append('.')
 from classes.pump_class import Pump
 
 class Pump_tab:
+    """
+    Instance creating a tab containing the Tk widgets to control 
+    the pump (of class Pump) to which the tab is associated.
+    The commands associated to the widgets are Pump attributes.
+    """
     def __init__(self,tabControl,pump):
         self.pump = pump
+        #Creates a new tab associated to the pump
         self.tab = ttk.Frame(tabControl)
         tabControl.add(self.tab, text=pump.name)
-
+        
+        #Lock button
         self.lock_button = self._lock_button()
         self.lock_button.grid(row=0,column=0,sticky=W,columnspan=2)
-
+        
+        #Unlock button
         self.unlock_button = self._unlock_button()
         self.unlock_button.grid(row=0,column=2,sticky=W,columnspan=2)
-
+        
+        #Stop button
         self.stop_button = self._stop()
         self.stop_button.grid(row=0,column=4,sticky=W)
-
+        
+        #Section with flowrate selection and start flow button
         self.flow_pane = self._flow_pane()
         self.flow_pane[0].grid(row=2,column=0,sticky=W)
         self.flow_pane[1].grid(row=2, column=1,sticky=W)
         self.flow_pane[2].grid(row=2,column=2,sticky=W)
-
+        
+        #Section with flowrate and volume selection and dispense volume button
         self.dispenseV_pane = self._dispenseV_pane()
         self.dispenseV_pane[0].grid(row=3,column=0,sticky=W)
         self.dispenseV_pane[1].grid(row=3,column=1,sticky=W)
         self.dispenseV_pane[2].grid(row=3,column=2, sticky=W)
         self.dispenseV_pane[3].grid(row=3, column=3,sticky=W)
         self.dispenseV_pane[4].grid(row=3,column=4, sticky=W)
-
+        
+        #Section with flowrate and duration selection and dispense duration button
         self.dispenseT_pane = self._dispenseT_pane()
         self.dispenseT_pane[0].grid(row=4,column=0,sticky=W)
         self.dispenseT_pane[1].grid(row=4,column=1,sticky=W)
