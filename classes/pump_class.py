@@ -1,3 +1,4 @@
+#author : Maël Arveiler
 import serial
 import time
 import datetime
