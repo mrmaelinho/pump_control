@@ -77,11 +77,25 @@ def connect_pump():
         if port_is_pump:
             #Create a new Pump instance, together with a new Pump_tab instance.
             pump_number = str(len(pumps)+1)
-            pumps.append(Pump(ports[to_connect[0]].name,'Pump '+str(len(pumps)+1)))
+            pumps.append(Pump(ports[to_connect[0]].name,\
+                              'Pump '+str(len(pumps)+1)))
             print('Success :',ports[to_connect[0]].name,'connected as Pump',len(pumps))
             create_pump_tab()
         else:
             print('Device on port %s is not detected as a pump'%ports[to_connect[0]].name)
+
+def COM_list():
+    """
+    Lists available COM ports in first tab.
+    """
+    ports_list.delete(0,END)
+    ports = list_ports.comports()
+    ports.pop(0)#Removes COM1 which is internal and cannot communicate.
+    for port in ports:
+        ports_list.insert(ports.index(port),port.description)
+    return ports
+
+
 
 if __name__ == '__main__':
     #Main GUI window.
@@ -98,18 +112,23 @@ if __name__ == '__main__':
     tabs.append(ttk.Frame(tabControl))
     tabControl.add(tabs[0], text='Connect pump')
 
-    #Lists available COM ports in first tab.
-    ports = list_ports.comports()
-    ports.pop(0)#Removes COM1 which is internal and cannot communicate.
-    ports_list = Listbox(tabs[0],width=30)#Display list of avilable COM ports.
-    for port in ports:
-        ports_list.insert(ports.index(port),port.description)
+    #Display list of available COM ports
+    ports_list = Listbox(tabs[0],width=30)
     ports_list.pack()
+    ports = COM_list()
 
     #Container for pumps (of class Pump) that are connected.
     pumps = list()
 
     #Button to connect the pump selected in the list of available COM ports.
-    connect_button = Button(tabs[0],text='Connect', command = connect_pump).pack()
+    connect_button = Button(tabs[0],\
+                            text='Connect',\
+                            command=connect_pump).pack()
+
+    #Button to refresh the COM port list
+    refresh_button = Button(tabs[0],\
+                            text='Refresh list',\
+                            command = COM_list)
+    refresh_button.pack()
 
     fenetre.mainloop()
