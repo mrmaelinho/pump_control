@@ -35,7 +35,7 @@ def test_is_pump(com):
         test_port.close()
         #Expected answer contains the name of the pump
         if buff.decode()[-35:-5] == 'VERITY 3011 CONTROLLER,1.1.0.0':
-            return "Gilson"
+            return True
 
     def test_is_lspone_pump(com):
         """
@@ -44,11 +44,11 @@ def test_is_pump(com):
         #Establish a serial connection with pump parameters.
         test_port = serial.Serial(port=com,\
                             baudrate=9600,\
-                            parity=PARITY_NONE,\
-                            bytesize=EIGHTBITS,\
+                            # parity=PARITY_NONE,\
+                            # bytesize=EIGHTBITS,\
                             dsrdtr=True,\
                             rtscts=True,\
-                            stopbits=STOPBITS_ONE,\
+                            # stopbits=STOPBITS_ONE,\
                             timeout=1)
         #Send command to initialise, will answer only if device is a LSPOnepump.
         test_port.write('/1ZR\r\n'.encode())
@@ -58,8 +58,13 @@ def test_is_pump(com):
         test_port.close()
         #Expected answer contains the name of the pump
         if buff.decode() == '/0@<ETX><CR><LF>':
-            return "LSPOne"
-    return False # Returned only if neither test returned a pump name.
+            return True
+    if test_is_gilson_pump(com) == True:
+        return "LSPOne"
+    elif test_is_lspone_pump(com) == True:
+        return "LSPone"
+    else:
+        return False # Returned only if neither test returned a pump name.
 
 
 
@@ -108,13 +113,10 @@ def connect_pump():
         if port_is_pump != False:
             #Create a new Pump instance, together with a new Pump_tab instance.
             pump_number = str(len(pumps)+1)
-            pumps.append(Pump(ports[to_connect[0]].name,\
-                              'Pump '+str(len(pumps)+1)))
             if port_is_pump == "Gilson":
                 pumps.append(Pump_Gilson(ports[to_connect[0]].name,'Pump '+str(len(pumps)+1)))
             if port_is_pump == "LSPOne":
                 pumps.append(Pump_LSPOne(ports[to_connect[0]].name,'Pump '+str(len(pumps)+1)))
->>>>>>> 25584cadf5864ca397e1c70ac01302852431e31c
             print('Success :',ports[to_connect[0]].name,'connected as Pump',len(pumps))
             create_pump_tab(port_is_pump) #Create new tab to control this pump.
         else:

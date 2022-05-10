@@ -225,11 +225,11 @@ class Pump_LSPOne:
     def __init__(self,port_name, pump_name):
         self.ser = serial.Serial(port=port_name,\
                                     baudrate=9600,\
-                                    parity=PARITY_NONE,\
-                                    bytesize=EIGHTBITS,\
+                                    # parity=PARITY_NONE,\
+                                    # bytesize=EIGHTBITS,\
                                     dsrdtr=True,\
                                     rtscts=True,\
-                                    stopbits=STOPBITS_ONE,\
+                                    # stopbits=STOPBITS_ONE,\
                                     timeout=1)
         self.ser.close()
         self.name = pump_name
@@ -259,14 +259,13 @@ class Pump_LSPOne:
             message += 'gO%dN0V1600A3000O%dV%dA0G%d'%(port_in,\
                                                        port_out,\
                                                        speed,\
-                                                       repetitions,\
-                                                       rest)
+                                                       repetitions)
         if rest!=0:
             #Calculate number of syringe microsteps to pick desired volume
-            message += 'O%N0V1600A%dO%dV%dA0'%(port_in,\
-                                               int(rest*3000/syringeV),\
-                                               port_out,\
-                                               speed)
+            message += 'O%dN0V1600A%dO%dV%dA0'%(port_in,\
+                                                int(rest*3000/syringe_V),\
+                                                port_out,\
+                                                speed)
         message += 'R\r\n' #EOL characters
         self.ser.write(message.encode())
         self.ser.close()

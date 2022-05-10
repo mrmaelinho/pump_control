@@ -5,7 +5,7 @@ import serial
 from serial.tools import list_ports
 import sys
 sys.path.append('.')
-from classes.pump_class import Pump
+from classes.pump_classes import Pump_Gilson, Pump_LSPOne
 
 class Pump_tab_Gilson:
     """
@@ -155,7 +155,6 @@ class Pump_tab_Gilson:
                 self.dispenseT_label,\
                 self.dispenseT_button)
 
-##LSPOne
 class Pump_tab_LSPOne:
     """
     Instance creating a tab containing the Tk widgets to control
@@ -170,15 +169,18 @@ class Pump_tab_LSPOne:
 
         #Stop button
         self.stop_button = self._stop()#Create button
-        self.stop_button.grid(row=0,column=4,sticky=W)#pack button in grid
+        self.stop_button.grid(row=0,\
+                              column=0,\
+                              columnspan=2,\
+                              sticky=W)#pack button in grid
 
         #Syringe size selection
-        self.syringe_select = syringe_selection()
-        for i in range(9):#pack all the widgets in the grid
+        self.syringe_select = self._syringe_selection()
+        for i in range(2):#pack all the widgets in the grid
             self.syringe_select[i].grid(row=2,column=i,sticky=W)
 
         #Solvent and waste ports
-        self.standard_ports = ports_selection()
+        self.standard_ports = self._ports_selection()
         for i in range(4):#pack all the widgets in the grid
             self.standard_ports[i].grid(row=3,column=i,sticky=W)
 
@@ -194,33 +196,34 @@ class Pump_tab_LSPOne:
                       bg = 'red',\
                       command = self.pump.stop)
 
-    def syringe_selection(self):
+    def _syringe_selection(self):
         syringe_V_choices = [50,1000]
         syringe_V_labels = ['50 µL', '1000 µL']
-        syringe_V = IntVar()
-        syringe_V.set(syringe_V_choices[1])
+        self.syringe_V = IntVar()
+        self.syringe_V.set(syringe_V_choices[1])
         syringe_button = list()
         for i in range(2):
-            syringe_button.append() = RadioButton(self.tab,\
-                                                variable=syringe_V,\
-                                                text=syringe_V_labels[i],\
-                                                value=syringe_V_choices[i])
+            syringe_button.append(ttk.Radiobutton(self.tab,\
+                                  variable=self.syringe_V,\
+                                  text=syringe_V_labels[i],\
+                                  value=syringe_V_choices[i]))
+        return syringe_button
 
-    def ports_selection(self):
-        self.solvent_port_label = Label(self.tab,\
+    def _ports_selection(self):
+        self.solvent_port_label = ttk.Label(self.tab,\
                                         text='Fresh solvent port',\
-                                        width=25)
-        self.solvent_port = Int(value=1)
+                                        width=10)
+        self.solvent_port = IntVar(value=1)
         self.solvent_port_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
                                           increment=1,\
                                           textvariable = self.solvent_port,\
                                           width=10)
-        self.waste_port_label = Label(self.tab,\
+        self.waste_port_label = ttk.Label(self.tab,\
                                         text='Waste port',\
-                                        width=15)
-        self.waste_port = Int(value=8)
+                                        width=10)
+        self.waste_port = IntVar(value=8)
         self.waste_port_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
@@ -233,10 +236,10 @@ class Pump_tab_LSPOne:
                 self.waste_port_spinbox)
 
     def _dispenseV_pane(self):
-        self.port_in_label = Label(self.tab,\
-                                  text="IN port,\
-                                  width = 5")
-        self.port_in = Int(value=1)
+        self.port_in_label = ttk.Label(self.tab,\
+                                  text="In port",\
+                                  width = 10)
+        self.port_in = IntVar(value=1)
         self.port_in_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
@@ -244,10 +247,10 @@ class Pump_tab_LSPOne:
                                           textvariable = self.port_in,\
                                           width=10)
 
-        self.port_out_label = Label(self.tab,\
-                                  text="IN port,\
-                                  width = 5")
-        self.port_out = Int(value=2)
+        self.port_out_label = ttk.Label(self.tab,\
+                                  text="Out port",\
+                                  width = 10)
+        self.port_out = IntVar(value=2)
         self.port_out_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
@@ -256,24 +259,24 @@ class Pump_tab_LSPOne:
                                           width=10)
         self.flowrateV = DoubleVar(value=0.000)
         self.flowrateV_spinbox = ttk.Spinbox(self.tab,\
-                                             from_ = 0,\
-                                             to = 5,\
-                                             increment = 0.001,\
+                                             from_ = 1,\
+                                             to = 5000,\
+                                             increment = 1,\
                                              textvariable = self.flowrateV,\
                                              width=10)
-        self.flowrate_dispenseV_label = Label(self.tab,\
-                                              text = 'mL/min',\
+        self.flowrate_dispenseV_label = ttk.Label(self.tab,\
+                                              text = 'µL/min',\
                                               width=10)
         self.volume = DoubleVar(value=0.000)
         self.dispenseV_spinbox = ttk.Spinbox(self.tab,\
                                              from_ = 0,\
-                                             to = 100,\
-                                             increment = 0.001,\
+                                             to = 10000,\
+                                             increment = 1,\
                                              textvariable=self.volume,\
                                              width=10)
-        self.dispenseV_label = Label(self.tab,\
-                                     text = 'mL',\
-                                     width=10)
+        self.dispenseV_label = ttk.Label(self.tab,\
+                                     text = 'µL',\
+                                     width=15)
 
         def _start_dispenseV():
             self.pump.dispense_volume(self.port_in.get(),\
@@ -282,7 +285,7 @@ class Pump_tab_LSPOne:
                                       self.flowrateV.get(),\
                                       self.syringe_V.get())
 
-        self.dispenseV_button = Button(self.tab,\
+        self.dispenseV_button = ttk.Button(self.tab,\
                                        text = 'Dispense volume',\
                                        command = _start_dispenseV)
         return (self.port_in_label,\
