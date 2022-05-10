@@ -233,9 +233,6 @@ class Pump_LSPOne:
                                     timeout=1)
         self.ser.close()
         self.name = pump_name
-        self.pressure = [0]
-        self.flowrate = [0]
-        self.t = [0]
 
     def open(self):
         self.ser.open()
@@ -253,23 +250,24 @@ class Pump_LSPOne:
         print(buff.decode())
         print('{} {} communication is closed.'.format(ts,self.name))
 
-    def start_flow(self,flowrate):
-        self.lock()
+    def dispense_volume(self, port_in, port_out, volume, flowrate, syringe_V):
         self.ser.open()
-        message = '?[1002,0,1,CMD,SYN,0(Set Pump Flow Rate,%.3f)]?\r\n'%flowrate
-        self.ser.write(message.encode())
-        self.ser.close()
-        self.ser.open()
-        buff = self.ser.readall()
-        self.ser.close()
-        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print(buff.decode())
-        print('{} {} pumping at {} mL/min.'.format(ts, self.name, flowrate))
-
-    def dispense_volume(self, volume, flowrate):
-        self.lock()
-        self.ser.open()
-        message = '?[1002,0,1,CMD,SYN,0(Dispense by Volume,%.3f,%.3f)]?\r\n'%(flowrate,volume)
+        repetitions, rest = volume//syringe_V, volume%syringe_V
+        speed = int((flowrate/60)/(syringe_V/3000))
+        message='/1' #message initialisation
+        if repetitions>0:
+            message += 'gO%dN0V1600A3000O%dV%dA0G%d'%(port_in,\
+                                                       port_out,\
+                                                       speed,\
+                                                       repetitions,\
+                                                       rest)
+        if rest!=0:
+            #Calculate number of syringe microsteps to pick desired volume
+            message += 'O%N0V1600A%dO%dV%dA0'%(port_in,\
+                                               int(rest*3000/syringeV),\
+                                               port_out,\
+                                               speed)
+        message += 'R\r\n' #EOL characters
         self.ser.write(message.encode())
         self.ser.close()
         self.ser.open()
@@ -277,10 +275,9 @@ class Pump_LSPOne:
         self.ser.close()
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         print(buff.decode())
-        print('{} {} dispensing {} mL at {} mL/min.'.format(ts, self.name, volume, flowrate))
+        print('{} {} dispensing {} µL at {} mL/min.'.format(ts, self.name, volume, flowrate))
 
     def dispense_duration(self, duration, flowrate):
-        self.lock()
         self.ser.open()
         message = '?[1002,0,1,CMD,SYN,0(Dispense by Time,%.3f,%.2f)]?\r\n'%(flowrate,duration)
         self.ser.write(message.encode())

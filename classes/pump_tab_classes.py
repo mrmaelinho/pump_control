@@ -177,10 +177,15 @@ class Pump_tab_LSPOne:
         for i in range(9):#pack all the widgets in the grid
             self.syringe_select[i].grid(row=2,column=i,sticky=W)
 
+        #Solvent and waste ports
+        self.standard_ports = ports_selection()
+        for i in range(4):#pack all the widgets in the grid
+            self.standard_ports[i].grid(row=3,column=i,sticky=W)
+
         #Section with flowrate and volume selection and dispense volume button
         self.dispenseV_pane = self._dispenseV_pane()#create all the widgets
         for i in range(9):#pack all the widgets in the grid
-            self.dispenseV_pane[i].grid(row=2,column=i,sticky=W)
+            self.dispenseV_pane[i].grid(row=4,column=i,sticky=W)
 
     def _stop(self):
         return Button(self.tab,\
@@ -193,7 +198,7 @@ class Pump_tab_LSPOne:
         syringe_V_choices = [50,1000]
         syringe_V_labels = ['50 µL', '1000 µL']
         syringe_V = IntVar()
-        syringe_V.set(vals[1])
+        syringe_V.set(syringe_V_choices[1])
         syringe_button = list()
         for i in range(2):
             syringe_button.append() = RadioButton(self.tab,\
@@ -201,27 +206,53 @@ class Pump_tab_LSPOne:
                                                 text=syringe_V_labels[i],\
                                                 value=syringe_V_choices[i])
 
-    def _dispenseV_pane(self):
-        self.portIn_label = Label(self.tab,\
-                                  text="IN port,\
-                                  width = 5")
-        self.portIn = Int(value=1)
-        self.portIn_spinbox = ttk.Spinbox(self.tab,\
+    def ports_selection(self):
+        self.solvent_port_label = Label(self.tab,\
+                                        text='Fresh solvent port',\
+                                        width=25)
+        self.solvent_port = Int(value=1)
+        self.solvent_port_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
                                           increment=1,\
-                                          textvariable = self.portIn,\
+                                          textvariable = self.solvent_port,\
+                                          width=10)
+        self.waste_port_label = Label(self.tab,\
+                                        text='Waste port',\
+                                        width=15)
+        self.waste_port = Int(value=8)
+        self.waste_port_spinbox = ttk.Spinbox(self.tab,\
+                                          from_ =1,\
+                                          to = 8,\
+                                          increment=1,\
+                                          textvariable = self.waste_port,\
+                                          width=10)
+        return (self.solvent_port_label,\
+                self.solvent_port_spinbox,\
+                self.waste_port_label,\
+                self.waste_port_spinbox)
+
+    def _dispenseV_pane(self):
+        self.port_in_label = Label(self.tab,\
+                                  text="IN port,\
+                                  width = 5")
+        self.port_in = Int(value=1)
+        self.port_in_spinbox = ttk.Spinbox(self.tab,\
+                                          from_ =1,\
+                                          to = 8,\
+                                          increment=1,\
+                                          textvariable = self.port_in,\
                                           width=10)
 
-        self.portOut_label = Label(self.tab,\
+        self.port_out_label = Label(self.tab,\
                                   text="IN port,\
                                   width = 5")
-        self.portOut = Int(value=2)
-        self.portOut_spinbox = ttk.Spinbox(self.tab,\
+        self.port_out = Int(value=2)
+        self.port_out_spinbox = ttk.Spinbox(self.tab,\
                                           from_ =1,\
                                           to = 8,\
                                           increment=1,\
-                                          textvariable = self.portOut,\
+                                          textvariable = self.port_out,\
                                           width=10)
         self.flowrateV = DoubleVar(value=0.000)
         self.flowrateV_spinbox = ttk.Spinbox(self.tab,\
@@ -243,35 +274,27 @@ class Pump_tab_LSPOne:
         self.dispenseV_label = Label(self.tab,\
                                      text = 'mL',\
                                      width=10)
-        self.repeat = Int(0)
-        # self.repeat_spinbox = ttk.Spinbox(self.tab,\
-        #                                      from_ = 0,\
-        #                                      to = 100,\
-        #                                      increment = 1,\
-        #                                      textvariable=self.repeat,\
-        #                                      width=10)
-        # self.repeat_label = Label(self.tab,\
-        #                           text = 'repetition(s)',\
-        #                           width=10)
 
         def _start_dispenseV():
-            flowrate = self.flowrateV.get()
-            volume = self.volume.get()
-            self.pump.dispense_volume(volume,flowrate)
+            self.pump.dispense_volume(self.port_in.get(),\
+                                      self.port_out.get(),\
+                                      self.volume.get(),\
+                                      self.flowrateV.get(),\
+                                      self.syringe_V.get())
+
         self.dispenseV_button = Button(self.tab,\
                                        text = 'Dispense volume',\
                                        command = _start_dispenseV)
-        return (self.portIn_label,\
-                self.portIn_spinbox,\
-                self.portOut_label,\
-                self.portOut_spinbox,\
+        return (self.port_in_label,\
+                self.port_in_spinbox,\
+                self.port_out_label,\
+                self.port_out_spinbox,\
                 self.flowrateV_spinbox,\
                 self.flowrate_dispenseV_label,\
                 self.dispenseV_spinbox,\
                 self.dispenseV_label,\
                 self.dispenseV_button)
-                # self.repeat_spinbox,\
-                # self.repeat_label)
+
 
     def _dispenseT_pane(self):
         self.flowrateT = DoubleVar(value=0.000)
