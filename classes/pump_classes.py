@@ -256,13 +256,13 @@ class Pump_LSPOne:
         speed = int((flowrate/60)/(syringe_V/3000))
         message='/1' #message initialisation
         if repetitions>0:
-            message += 'gO%dN0V1600A3000O%dV%dA0G%d'%(port_in,\
+            message += 'gB%dN0V1600A3000B%dV%dA0G%d'%(port_in,\
                                                        port_out,\
                                                        speed,\
                                                        repetitions)
         if rest!=0:
             #Calculate number of syringe microsteps to pick desired volume
-            message += 'O%dN0V1600A%dO%dV%dA0'%(port_in,\
+            message += 'B%dN0V1600A%dB%dV%dA0'%(port_in,\
                                                 int(rest*3000/syringe_V),\
                                                 port_out,\
                                                 speed)
@@ -290,12 +290,35 @@ class Pump_LSPOne:
 
     def stop(self):
         self.ser.open()
-        self.ser.write('?[1003,0,1,CMD,SYN,0(Stop Pump,false)]?\r\n'.encode())
+        self.ser.write('/1T\r\n'.encode())
         self.ser.close()
+        # self.ser.open()
+        # buff = self.ser.readline()
+        # self.ser.close()
+        # ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        # print(buff.decode())
+        # print('{} {} stopped.'.format(ts,self.name))
+
+    def pause(self):
         self.ser.open()
-        buff = self.ser.readline()
+        self.ser.write('/1H\r\n'.encode())
         self.ser.close()
+        # self.ser.open()
+        # buff = self.ser.readline()
+        # self.ser.close()
+        # ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        # print(buff.decode())
+        # print('{} {} paused.'.format(ts,self.name))
+
+    def resume(self):
+        self.ser.open()
+        self.ser.write('/1R\r\n'.encode())
+        self.ser.close()
+
+    def custom_command(self,command):
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        print(buff.decode())
-        print('{} {} stopped.'.format(ts,self.name))
-        self.unlock()
+        print('{} {} executing command : {}.'.format(ts, self.name, command))
+        command += '\r\n'#EOL characters
+        self.ser.open()
+        self.ser.write(command.encode())
+        self.ser.close()

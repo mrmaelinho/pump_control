@@ -173,6 +173,18 @@ class Pump_tab_LSPOne:
                               column=0,\
                               columnspan=2,\
                               sticky=W)#pack button in grid
+        #Pause button
+        self.pause_button = self._pause()#Create button
+        self.pause_button.grid(row=0,\
+                              column=2,\
+                              columnspan=2,\
+                              sticky=W)#pack button in grid
+        #Resume button
+        self.resume_button = self._resume()#Create button
+        self.resume_button.grid(row=0,\
+                              column=4,\
+                              columnspan=4,\
+                              sticky=W)#pack button in grid
 
         #Syringe size selection
         self.syringe_select = self._syringe_selection()
@@ -189,12 +201,37 @@ class Pump_tab_LSPOne:
         for i in range(9):#pack all the widgets in the grid
             self.dispenseV_pane[i].grid(row=4,column=i,sticky=W)
 
+        #Custom command
+        self.custom_command = self._run_command()
+        self.custom_command[0].grid(row=5,\
+                                    column=0,\
+                                    columnspan=8,\
+                                    sticky=W)
+        self.custom_command[1].grid(row=5,\
+                                    column=8,\
+                                    columnspan=1,\
+                                    sticky=W)
+
     def _stop(self):
         return Button(self.tab,\
                       text = 'Stop pump',\
                       width = 20,\
                       bg = 'red',\
                       command = self.pump.stop)
+
+    def _pause(self):
+        return Button(self.tab,\
+                      text = 'Pause after current move',\
+                      width = 20,\
+                      bg = 'orange',\
+                      command = self.pump.pause)
+
+    def _resume(self):
+        return Button(self.tab,\
+                      text = 'Resume paused or stopped command',\
+                      width = 40,\
+                      bg = 'green',\
+                      command = self.pump.resume)
 
     def _syringe_selection(self):
         syringe_V_choices = [50,1000]
@@ -211,7 +248,7 @@ class Pump_tab_LSPOne:
 
     def _ports_selection(self):
         self.solvent_port_label = ttk.Label(self.tab,\
-                                        text='Fresh solvent port',\
+                                        text='Rinse solvent',\
                                         width=10)
         self.solvent_port = IntVar(value=1)
         self.solvent_port_spinbox = ttk.Spinbox(self.tab,\
@@ -298,35 +335,17 @@ class Pump_tab_LSPOne:
                 self.dispenseV_label,\
                 self.dispenseV_button)
 
-
-    def _dispenseT_pane(self):
-        self.flowrateT = DoubleVar(value=0.000)
-        self.flowrateT_spinbox = ttk.Spinbox(self.tab,\
-                                             from_ = 0,\
-                                             to = 5,\
-                                             increment = 0.001,\
-                                             textvariable = self.flowrateT,\
-                                             width=10)
-        self.flowrate_dispenseT_label = Label(self.tab,\
-                                              text = 'mL/min',\
-                                              width=10)
-        self.duration = DoubleVar(value=0.000)
-        self.dispenseT_spinbox = ttk.Spinbox(self.tab,\
-                                             from_ = 0,\
-                                             to = 100,\
-                                             increment = 0.001,\
-                                             textvariable=self.duration,\
-                                             width=10)
-        self.dispenseT_label = Label(self.tab,text = 'min', width=10)
-        def _start_dispenseT():
-            flowrate = self.flowrateT.get()
-            duration = self.duration.get()
-            self.pump.dispense_duration(duration,flowrate)
-        self.dispenseT_button = Button(self.tab,\
-                                       text = 'Dispense duration',\
-                                       command = _start_dispenseT)
-        return (self.flowrateT_spinbox,\
-                self.flowrate_dispenseT_label,\
-                self.dispenseT_spinbox,\
-                self.dispenseT_label,\
-                self.dispenseT_button)
+    def _run_command(self):
+            self.command = StringVar()
+            self.command_entry = Entry(self.tab,\
+                                       textvariable = self.command,\
+                                       width=100)
+            def _run():
+                self.pump.custom_command(self.command.get())
+            self.run_button = Button(self.tab,\
+                                     text = 'Run',\
+                                     width=10,\
+                                     bg='green',\
+                                     command = _run)
+            return (self.command_entry,\
+                    self.run_button)

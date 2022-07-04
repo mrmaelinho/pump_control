@@ -9,6 +9,7 @@ sys.path.append('.')
 from classes.pump_classes import Pump_Gilson, Pump_LSPOne
 from classes.pump_tab_classes import Pump_tab_Gilson, Pump_tab_LSPOne
 from functools import partial
+from time import sleep
 
 def test_is_pump(com):
     """
@@ -46,23 +47,23 @@ def test_is_pump(com):
                             baudrate=9600,\
                             # parity=PARITY_NONE,\
                             # bytesize=EIGHTBITS,\
-                            dsrdtr=True,\
-                            rtscts=True,\
+                            dsrdtr=False,\
+                            rtscts=False,\
                             # stopbits=STOPBITS_ONE,\
                             timeout=1)
         #Send command to initialise, will answer only if device is a LSPOnepump.
-        test_port.write('/1ZR\r\n'.encode())
-        test_port.close()
-        test_port.open()
+        test_port.write('/1?76\r\n'.encode())
+        # test_port.close()
+        # test_port.open()
         buff = test_port.readline()
         test_port.close()
         #Expected answer contains the name of the pump
-        if buff.decode() == '/0@<ETX><CR><LF>':
+        if buff.decode()[:2] == '/0':
             return True
     if test_is_gilson_pump(com) == True:
-        return "LSPOne"
+        return "Gilson"
     elif test_is_lspone_pump(com) == True:
-        return "LSPone"
+        return "LSPOne"
     else:
         return False # Returned only if neither test returned a pump name.
 
@@ -139,7 +140,7 @@ if __name__ == '__main__':
     #Main GUI window.
     fenetre = Tk()
     fenetre.title("Fluidic pumps control")
-    fenetre.geometry('500x300')
+    fenetre.geometry('750x300')
 
     #Notebook filled with tabs (first a "connect pump tab" then a tab for each pump).
     tabControl = ttk.Notebook(fenetre)
