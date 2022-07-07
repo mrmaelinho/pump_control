@@ -1,11 +1,16 @@
 #author : Maël Arveiler
 from tkinter import *
 from tkinter import ttk
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import tkinter.scrolledtext as tkscrolled
 import serial
 from serial.tools import list_ports
 import sys
 sys.path.append('.')
 from classes.pump_classes import Pump_Gilson, Pump_LSPOne
+import re
+import time
+import datetime
 
 class Pump_tab_Gilson:
     """
@@ -212,6 +217,26 @@ class Pump_tab_LSPOne:
                                     columnspan=1,\
                                     sticky=W)
 
+        #Upload document
+        self.upload_document = self._upload_document()
+        self.upload_document[0].grid(row=6,\
+                                    column=0,\
+                                    columnspan=2,\
+                                    sticky=W)
+        self.upload_document[1].grid(row=6,\
+                                    column=2,\
+                                    columnspan=2,\
+                                    sticky=W)
+        self.upload_document[2].grid(row=6,\
+                                     column=4,\
+                                     columnspan=2,\
+                                     sticky=W)
+        self.upload_document[3].grid(row=7,\
+                                    column=0,\
+                                    columnspan=11,\
+                                    sticky=W)
+
+
     def _stop(self):
         return Button(self.tab,\
                       text = 'Stop pump',\
@@ -349,3 +374,129 @@ class Pump_tab_LSPOne:
                                      command = _run)
             return (self.command_entry,\
                     self.run_button)
+
+    def _upload_document(self):
+        def _get_path():
+            self.commands_text.delete(1.0,END)
+            self.document_path = askopenfilename(title='Sélectionner le fichier',\
+                                                 initialdir= r"C:\Users\mael.arveiler\Desktop\pump_control",\
+                                                 filetypes=[('text files','.txt')])
+            document = open(self.document_path,'r')
+            commands = document.read()
+            self.commands_text.insert(INSERT,commands)
+        self.get_doc_button = Button(self.tab,\
+                                     text = 'Load',\
+                                     width=10,\
+                                     bg='blue',\
+                                     command = _get_path)
+        def _send_path():
+            self.pump.run_upload_document(self.document_path)
+        self.run_doc_button = Button(self.tab,\
+                                         text = 'Run',\
+                                         width=10,\
+                                         bg='green',\
+                                         command = _send_path)
+        self.commands_text = tkscrolled.ScrolledText(self.tab,\
+                                                     height=10,\
+                                                     width=75)
+        def _save_file():
+            self.document_path = asksaveasfilename(initialdir= r"C:\Users\mael.arveiler\Desktop\pump_control",\
+                                                   defaultextension='.txt',\
+                                                   filetypes=[("Text Documents","*.txt")])
+            doc = open(self.document_path,'w')
+            doc.write(self.commands_text.get('1.0', END))
+        self.save_doc_button = Button(self.tab,\
+                                      text = 'Save',\
+                                      width=10,\
+                                      bg='blue',\
+                                      command = _save_file)
+        return(self.get_doc_button,\
+               self.save_doc_button,\
+               self.run_doc_button,\
+               self.commands_text)
+
+class Common_tab:
+    """
+    Instance creating a tab containing the Tk widgets to simultaneously
+    control the pumps (of class Pump) already connected.
+    The commands associated to the widgets are Pump attributes.
+    """
+    def __init__(self,tabControl,pumps):
+        #Creates a new tab associated to the pump
+        self.tab = ttk.Frame(tabControl)
+        self.pumps = pumps
+        tabControl.add(self.tab, text='Synced pumps')
+        #Upload document
+        self.upload_document = self._upload_document()
+        self.upload_document[0].grid(row=1,\
+                                    column=0,\
+                                    columnspan=2,\
+                                    sticky=W)
+        self.upload_document[1].grid(row=1,\
+                                    column=1,\
+                                    columnspan=2,\
+                                    sticky=W)
+        self.upload_document[2].grid(row=1,\
+                                     column=4,\
+                                     columnspan=2,\
+                                     sticky=W)
+        self.upload_document[3].grid(row=2,\
+                                    column=0,\
+                                    columnspan=11,\
+                                    sticky=W)
+
+    def _upload_document(self):
+        def _get_path():
+            self.commands_text.delete(1.0,END)
+            self.document_path = askopenfilename(title='Sélectionner le fichier',\
+                                                 initialdir= r"C:\Users\mael.arveiler\Desktop\pump_control",\
+                                                 filetypes=[('text files','.txt')])
+            document = open(self.document_path,'r')
+            commands = document.read()
+            self.commands_text.insert(INSERT,commands)
+        self.get_doc_button = Button(self.tab,\
+                                     text = 'Load',\
+                                     width=10,\
+                                     bg='blue',\
+                                     command = _get_path)
+        def _run_doc():
+            lines = open(self.document_path).readlines()
+            command = str()
+            for line in lines:
+                if '@p' in line:
+                    pump_num = int(line[2])-1
+                if '/1' in line:
+                    self.pumps[pump_num].check_busy()
+                    command = re.sub('\n','',line)
+                if 'R' in line:
+                    ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                    print('{} {} executing command : {}.'.format(ts, self.pumps[pump_num].name, command))
+                    command += '\r\n'#EOL characters
+                    self.pumps[pump_num].ser.open()
+                    self.pumps[pump_num].ser.write(command.encode())
+                    self.pumps[pump_num].ser.close()
+                command += re.sub('\n','',line)
+
+        self.run_doc_button = Button(self.tab,\
+                                         text = 'Run',\
+                                         width=10,\
+                                         bg='green',\
+                                         command = _run_doc)
+        self.commands_text = tkscrolled.ScrolledText(self.tab,\
+                                                     height=10,\
+                                                     width=75)
+        def _save_file():
+            self.document_path = asksaveasfilename(initialdir= r"C:\Users\mael.arveiler\Desktop\pump_control",\
+                                                   defaultextension='.txt',\
+                                                   filetypes=[("Text Documents","*.txt")])
+            doc = open(self.document_path,'w')
+            doc.write(self.commands_text.get('1.0', END))
+        self.save_doc_button = Button(self.tab,\
+                                      text = 'Save',\
+                                      width=10,\
+                                      bg='blue',\
+                                      command = _save_file)
+        return(self.get_doc_button,\
+               self.save_doc_button,\
+               self.run_doc_button,\
+               self.commands_text)

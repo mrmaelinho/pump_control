@@ -4,6 +4,7 @@ import time
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import re
 
 ##Gilson
 class Pump_Gilson:
@@ -227,8 +228,8 @@ class Pump_LSPOne:
                                     baudrate=9600,\
                                     # parity=PARITY_NONE,\
                                     # bytesize=EIGHTBITS,\
-                                    dsrdtr=True,\
-                                    rtscts=True,\
+                                    dsrdtr=False,\
+                                    rtscts=False,\
                                     # stopbits=STOPBITS_ONE,\
                                     timeout=1)
         self.ser.close()
@@ -261,7 +262,7 @@ class Pump_LSPOne:
                                                        speed,\
                                                        repetitions)
         if rest!=0:
-            #Calculate number of syringe microsteps to pick desired volume
+            #Compute number of syringe microsteps to pick desired volume
             message += 'B%dN0V1600A%dB%dV%dA0'%(port_in,\
                                                 int(rest*3000/syringe_V),\
                                                 port_out,\
@@ -292,28 +293,34 @@ class Pump_LSPOne:
         self.ser.open()
         self.ser.write('/1T\r\n'.encode())
         self.ser.close()
-        # self.ser.open()
-        # buff = self.ser.readline()
-        # self.ser.close()
-        # ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        # print(buff.decode())
-        # print('{} {} stopped.'.format(ts,self.name))
 
     def pause(self):
         self.ser.open()
         self.ser.write('/1H\r\n'.encode())
         self.ser.close()
-        # self.ser.open()
-        # buff = self.ser.readline()
-        # self.ser.close()
-        # ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        # print(buff.decode())
-        # print('{} {} paused.'.format(ts,self.name))
 
     def resume(self):
         self.ser.open()
         self.ser.write('/1R\r\n'.encode())
         self.ser.close()
+
+    def check_busy(self):
+        busy = True
+        while busy:
+            self.ser.open()
+            self.ser.write('/1?9200\r\n'.encode())
+            valve = self.ser.readline()
+            self.ser.close()
+            self.ser.open()
+            self.ser.write('/1?9100\r\n'.encode())
+            plunger = self.ser.readline()
+            self.ser.close()
+            if plunger.decode()[3:-3] != '255'\
+             and valve.decode()[3:-3] != '255':
+                  busy = False
+            time.sleep(.25)
+        print('Ready.')
+        return 0
 
     def custom_command(self,command):
         ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -322,3 +329,25 @@ class Pump_LSPOne:
         self.ser.open()
         self.ser.write(command.encode())
         self.ser.close()
+        self.check_busy()
+
+    def run_upload_document(self,document_path):
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        print('{} {} executing commands from document : {}.'.format(ts, self.name, document_path))
+        document = open(document_path, 'r')
+        lines = document.readlines()
+        command = str()
+        for line in lines:
+            if line[:2] == '/1':
+                self.check_busy()
+                command = re.sub('\n','',line)
+            if 'R' in line:
+                ts = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                print('{} {} executing command : {}.'.format(ts, self.name, command))
+                command += '\r\n'#EOL characters
+                self.ser.open()
+                self.ser.write(command.encode())
+                self.ser.close()
+            command += re.sub('\n','',line)
+
+

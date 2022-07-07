@@ -6,8 +6,11 @@ import serial
 from serial.tools import list_ports
 import sys
 sys.path.append('.')
-from classes.pump_classes import Pump_Gilson, Pump_LSPOne
-from classes.pump_tab_classes import Pump_tab_Gilson, Pump_tab_LSPOne
+from classes.pump_classes import Pump_Gilson,\
+                                 Pump_LSPOne
+from classes.pump_tab_classes import Pump_tab_Gilson,\
+                                     Pump_tab_LSPOne,\
+                                     Common_tab
 from functools import partial
 from time import sleep
 
@@ -58,7 +61,7 @@ def test_is_pump(com):
         buff = test_port.readline()
         test_port.close()
         #Expected answer contains the name of the pump
-        if buff.decode()[:2] == '/0':
+        if buff.decode()[3:13] == 'LSPONE_LAB':
             return True
     if test_is_gilson_pump(com) == True:
         return "Gilson"
@@ -92,7 +95,6 @@ def create_pump_tab(pump_type):
     elif pump_type == "LSPOne":
         tabs.append(Pump_tab_LSPOne(tabControl,pumps[-1]))
 
-
 def connect_pump():
     """
     When "connect" button is pressed, checks if the selected port
@@ -113,13 +115,14 @@ def connect_pump():
         port_is_pump = test_is_pump(ports[to_connect[0]].name)
         if port_is_pump != False:
             #Create a new Pump instance, together with a new Pump_tab instance.
-            pump_number = str(len(pumps)+1)
             if port_is_pump == "Gilson":
                 pumps.append(Pump_Gilson(ports[to_connect[0]].name,'Pump '+str(len(pumps)+1)))
             if port_is_pump == "LSPOne":
                 pumps.append(Pump_LSPOne(ports[to_connect[0]].name,'Pump '+str(len(pumps)+1)))
             print('Success :',ports[to_connect[0]].name,'connected as Pump',len(pumps))
             create_pump_tab(port_is_pump) #Create new tab to control this pump.
+            if len(pumps) >= 2:
+                tabs.append(Common_tab(tabControl,pumps))
         else:
             print('Device on port %s is not detected as a pump'%ports[to_connect[0]].name)
 
