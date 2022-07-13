@@ -257,13 +257,13 @@ class Pump_LSPOne:
         speed = int((flowrate/60)/(syringe_V/3000))
         message='/1' #message initialisation
         if repetitions>0:
-            message += 'gB%dN0V1600A3000B%dV%dA0G%d'%(port_in,\
+            message += 'gB%dN0V1000A3000B%dV%dA0G%d'%(port_in,\
                                                        port_out,\
                                                        speed,\
                                                        repetitions)
         if rest!=0:
             #Compute number of syringe microsteps to pick desired volume
-            message += 'B%dN0V1600A%dB%dV%dA0'%(port_in,\
+            message += 'B%dN0V1000A%dB%dV%dA0'%(port_in,\
                                                 int(rest*3000/syringe_V),\
                                                 port_out,\
                                                 speed)
@@ -318,7 +318,7 @@ class Pump_LSPOne:
             if plunger.decode()[3:-3] != '255'\
              and valve.decode()[3:-3] != '255':
                   busy = False
-            time.sleep(.25)
+            time.sleep(1)
         print('Ready.')
         return 0
 

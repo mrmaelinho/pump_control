@@ -56,12 +56,13 @@ def test_is_pump(com):
                             timeout=1)
         #Send command to initialise, will answer only if device is a LSPOnepump.
         test_port.write('/1?76\r\n'.encode())
-        # test_port.close()
-        # test_port.open()
         buff = test_port.readline()
         test_port.close()
         #Expected answer contains the name of the pump
         if buff.decode()[3:13] == 'LSPONE_LAB':
+            test_port.open()
+            test_port.write('/1ZR\r\n'.encode())
+            test_port.close()
             return True
     if test_is_gilson_pump(com) == True:
         return "Gilson"
@@ -132,7 +133,6 @@ def COM_list():
     """
     ports_list.delete(0,END)
     ports = list_ports.comports()
-    ports.pop(0)#Removes COM1 which is internal and cannot communicate.
     for port in ports:
         ports_list.insert(ports.index(port),port.description)
     return ports
@@ -156,8 +156,10 @@ if __name__ == '__main__':
 
     #Display list of available COM ports
     ports_list = Listbox(tabs[0],width=30)
-    ports_list.pack()
     ports = COM_list()
+    ports_list.pack()
+
+
 
     #Container for pumps (of class Pump) that are connected.
     pumps = list()
